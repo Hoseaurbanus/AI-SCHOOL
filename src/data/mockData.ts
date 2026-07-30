@@ -1,4 +1,4 @@
-import type { Course } from '../types';
+import type { Course, CourseModule, CourseReview, Enrollment } from '../types';
 
 export const courses: Course[] = [
   {
@@ -295,34 +295,138 @@ export const studentCourses = [
 
 export const enrolledCourse = courses[0];
 
-export const curriculum = [
+export const curriculum: CourseModule[] = [
   {
-    module: 'Module 1: Python Foundations',
+    id: 'm1',
+    title: 'Getting Started with Python',
+    description: 'Set up your environment and write your first Python programs',
+    duration: '2 hours',
     lessons: [
-      { title: 'Introduction to Python & Setup', duration: '18 min', type: 'video', completed: true },
-      { title: 'Variables, Data Types & Operators', duration: '24 min', type: 'video', completed: true },
-      { title: 'Control Flow: if/elif/else', duration: '20 min', type: 'video', completed: true },
-      { title: 'Loops: for and while', duration: '22 min', type: 'video', completed: false },
-      { title: 'Practice: FizzBuzz & Patterns', duration: '30 min', type: 'exercise', completed: false },
+      { id: 'l1', title: 'Course Overview & Setup', duration: '15 min', type: 'video' },
+      { id: 'l2', title: 'Installing Python & VS Code', duration: '20 min', type: 'video' },
+      { id: 'l3', title: 'Your First Python Program', duration: '25 min', type: 'exercise' },
+      { id: 'l4', title: 'Variables & Data Types', duration: '30 min', type: 'reading' },
+      { id: 'l5', title: 'Module 1 Quiz', duration: '10 min', type: 'quiz' },
     ],
   },
   {
-    module: 'Module 2: Functions & OOP',
+    id: 'm2',
+    title: 'Control Flow & Functions',
+    description: 'Master conditionals, loops, and function composition',
+    duration: '3 hours',
     lessons: [
-      { title: 'Defining Functions', duration: '20 min', type: 'video', completed: false },
-      { title: 'Lambda & Higher-Order Functions', duration: '25 min', type: 'video', completed: false },
-      { title: 'Classes & Objects', duration: '28 min', type: 'video', completed: false },
-      { title: 'Inheritance & Polymorphism', duration: '22 min', type: 'video', completed: false },
-      { title: 'Project: Build a Bank Account System', duration: '45 min', type: 'project', completed: false },
+      { id: 'l6', title: 'If/Else Statements', duration: '25 min', type: 'video' },
+      { id: 'l7', title: 'For & While Loops', duration: '30 min', type: 'video' },
+      { id: 'l8', title: 'Defining Functions', duration: '35 min', type: 'exercise' },
+      { id: 'l9', title: 'Lambda & Higher-Order Functions', duration: '30 min', type: 'reading' },
+      { id: 'l10', title: 'Module 2 Challenge', duration: '20 min', type: 'exercise' },
     ],
   },
   {
-    module: 'Module 3: NumPy & Data Structures',
+    id: 'm3',
+    title: 'Data Structures',
+    description: 'Work with lists, dictionaries, sets, and tuples',
+    duration: '4 hours',
     lessons: [
-      { title: 'NumPy Arrays', duration: '26 min', type: 'video', completed: false },
-      { title: 'Array Operations & Broadcasting', duration: '24 min', type: 'video', completed: false },
-      { title: 'Pandas DataFrames', duration: '32 min', type: 'video', completed: false },
-      { title: 'Data Cleaning & Preprocessing', duration: '35 min', type: 'exercise', completed: false },
+      { id: 'l11', title: 'Lists & List Comprehensions', duration: '35 min', type: 'video' },
+      { id: 'l12', title: 'Dictionaries & JSON', duration: '40 min', type: 'video' },
+      { id: 'l13', title: 'Sets & Tuples', duration: '25 min', type: 'reading' },
+      { id: 'l14', title: 'Practice: Data Processing', duration: '45 min', type: 'exercise' },
+      { id: 'l15', title: 'Module 3 Quiz', duration: '15 min', type: 'quiz' },
     ],
+  },
+  {
+    id: 'm4',
+    title: 'Introduction to AI',
+    description: 'Understand AI concepts and build your first ML model',
+    duration: '5 hours',
+    lessons: [
+      { id: 'l16', title: 'What is AI & Machine Learning?', duration: '30 min', type: 'video' },
+      { id: 'l17', title: 'Setting Up Jupyter Notebook', duration: '20 min', type: 'video' },
+      { id: 'l18', title: 'Your First ML Model', duration: '60 min', type: 'exercise' },
+      { id: 'l19', title: 'Model Evaluation Metrics', duration: '35 min', type: 'reading' },
+      { id: 'l20', title: 'Final Project: Image Classifier', duration: '90 min', type: 'exercise' },
+    ],
+  },
+];
+
+export const courseReviews: CourseReview[] = [
+  {
+    id: 'r1',
+    userId: 'u1',
+    userName: 'Adaeze Nwosu',
+    userAvatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop&auto=format',
+    rating: 5,
+    comment: 'The AI tutor is a game-changer. It explained complex Python concepts in a way that finally clicked for me. Completed the course in 8 weeks!',
+    date: '2026-07-15',
+    helpful: 42,
+  },
+  {
+    id: 'r2',
+    userId: 'u2',
+    userName: 'Tunde Adebayo',
+    userAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&auto=format',
+    rating: 5,
+    comment: 'Best investment in my career. The hands-on projects gave me real skills I use daily at work. The coding lab is fantastic.',
+    date: '2026-07-10',
+    helpful: 38,
+  },
+  {
+    id: 'r3',
+    userId: 'u3',
+    userName: 'Chioma Obi',
+    userAvatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop&auto=format',
+    rating: 4,
+    comment: 'Great course content and structure. The AI tutor helped me debug code in real-time. Would love more advanced projects.',
+    date: '2026-07-05',
+    helpful: 25,
+  },
+];
+
+export const enrolledCourses: Enrollment[] = [
+  {
+    id: 'e1',
+    courseId: '1',
+    userId: 'u1',
+    status: 'active',
+    progress: 68,
+    enrolledAt: '2026-06-01',
+    lastAccessedAt: '2026-07-29',
+    currentModule: 2,
+    currentLesson: 3,
+  },
+  {
+    id: 'e2',
+    courseId: '4',
+    userId: 'u1',
+    status: 'active',
+    progress: 35,
+    enrolledAt: '2026-06-15',
+    lastAccessedAt: '2026-07-28',
+    currentModule: 1,
+    currentLesson: 5,
+  },
+  {
+    id: 'e3',
+    courseId: '2',
+    userId: 'u1',
+    status: 'completed',
+    progress: 100,
+    enrolledAt: '2026-04-01',
+    completedAt: '2026-06-20',
+    lastAccessedAt: '2026-06-20',
+    currentModule: 3,
+    currentLesson: 4,
+  },
+  {
+    id: 'e4',
+    courseId: '6',
+    userId: 'u1',
+    status: 'saved',
+    progress: 0,
+    enrolledAt: '2026-07-20',
+    lastAccessedAt: '2026-07-20',
+    currentModule: 0,
+    currentLesson: 0,
   },
 ];

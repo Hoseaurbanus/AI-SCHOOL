@@ -74,7 +74,7 @@ export default function CourseLearning() {
                   className="w-full flex items-center justify-between px-2 py-2.5 rounded-lg text-xs font-medium"
                   style={{ color: '#94A3B8' }}
                 >
-                  <span className="text-left truncate">{mod.module.replace('Module ', 'M')}</span>
+                  <span className="text-left truncate">{mod.title}</span>
                   <ChevronDown size={12} style={{ transform: openModule === i ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', flexShrink: 0 }} />
                 </button>
                 {openModule === i && (

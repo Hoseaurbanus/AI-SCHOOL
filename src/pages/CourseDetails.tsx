@@ -211,7 +211,7 @@ export default function CourseDetails() {
                       <div className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold" style={{ background: 'rgba(59,130,246,0.12)', color: '#3B82F6' }}>
                         {i + 1}
                       </div>
-                      <span className="font-semibold text-sm text-left" style={{ color: '#F1F5F9' }}>{mod.module}</span>
+                      <span className="font-semibold text-sm text-left" style={{ color: '#F1F5F9' }}>{mod.title}</span>
                     </div>
                     <div className="flex items-center gap-3">
                       <span className="text-xs" style={{ color: '#64748B' }}>{mod.lessons.length} lessons</span>
