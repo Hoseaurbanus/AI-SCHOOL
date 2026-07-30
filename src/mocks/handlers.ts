@@ -1,4 +1,5 @@
 import { http, HttpResponse } from 'msw';
+import { courses, curriculum, courseReviews, enrolledCourses } from '../data/mockData';
 
 const mockUser = {
   id: 'usr_001',
@@ -88,6 +89,117 @@ export const handlers = [
     return HttpResponse.json({
       success: true,
       data: null,
+    });
+  }),
+
+  // Course handlers
+  http.get('/api/courses', ({ request }) => {
+    const url = new URL(request.url);
+    const category = url.searchParams.get('category');
+    const level = url.searchParams.get('level');
+    const search = url.searchParams.get('search');
+    const sortBy = url.searchParams.get('sortBy');
+
+    let filtered = [...courses];
+
+    if (category && category !== 'All') {
+      filtered = filtered.filter((c) => c.category === category);
+    }
+    if (level && level !== 'All Levels') {
+      filtered = filtered.filter((c) => c.level === level);
+    }
+    if (search) {
+      const q = search.toLowerCase();
+      filtered = filtered.filter(
+        (c) =>
+          c.title.toLowerCase().includes(q) ||
+          c.description.toLowerCase().includes(q) ||
+          c.tags.some((t) => t.toLowerCase().includes(q))
+      );
+    }
+
+    if (sortBy === 'price-low') {
+      filtered.sort((a, b) => a.price - b.price);
+    } else if (sortBy === 'price-high') {
+      filtered.sort((a, b) => b.price - a.price);
+    } else if (sortBy === 'rating') {
+      filtered.sort((a, b) => b.rating - a.rating);
+    } else if (sortBy === 'popular') {
+      filtered.sort((a, b) => b.students - a.students);
+    }
+
+    return HttpResponse.json({
+      success: true,
+      data: filtered,
+    });
+  }),
+
+  http.get('/api/courses/featured', () => {
+    const featured = courses.filter((c) => c.featured);
+    return HttpResponse.json({
+      success: true,
+      data: featured,
+    });
+  }),
+
+  http.get('/api/courses/:id', ({ params }) => {
+    const course = courses.find((c) => c.id === params.id);
+    if (!course) {
+      return HttpResponse.json(
+        { success: false, message: 'Course not found' },
+        { status: 404 }
+      );
+    }
+    return HttpResponse.json({
+      success: true,
+      data: course,
+    });
+  }),
+
+  http.get('/api/courses/:id/modules', () => {
+    return HttpResponse.json({
+      success: true,
+      data: curriculum,
+    });
+  }),
+
+  http.get('/api/courses/:id/reviews', () => {
+    return HttpResponse.json({
+      success: true,
+      data: courseReviews,
+    });
+  }),
+
+  http.get('/api/enrollments', () => {
+    return HttpResponse.json({
+      success: true,
+      data: enrolledCourses,
+    });
+  }),
+
+  http.post('/api/enrollments', async ({ request }) => {
+    const { courseId } = await request.json() as { courseId: string };
+    const course = courses.find((c) => c.id === courseId);
+    if (!course) {
+      return HttpResponse.json(
+        { success: false, message: 'Course not found' },
+        { status: 404 }
+      );
+    }
+    const enrollment = {
+      id: `e${Date.now()}`,
+      courseId,
+      userId: 'u1',
+      status: 'active',
+      progress: 0,
+      enrolledAt: new Date().toISOString(),
+      lastAccessedAt: new Date().toISOString(),
+      currentModule: 0,
+      currentLesson: 0,
+    };
+    return HttpResponse.json({
+      success: true,
+      data: enrollment,
     });
   }),
 ];
