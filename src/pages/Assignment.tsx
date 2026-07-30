@@ -1,10 +1,9 @@
 import { useState } from 'react'
 import { Clock, Upload, CheckCircle, Code2, FileText, AlertCircle } from 'lucide-react'
-import type { Page } from '../types'
+import { useNavigate } from 'react-router-dom'
 
-interface Props { navigate: (p: Page) => void }
-
-export default function Assignment({ navigate }: Props) {
+export default function Assignment() {
+  const navigate = useNavigate()
   const [submitted, setSubmitted] = useState(false)
   const [tab, setTab] = useState<'description' | 'submit'>('description')
   const [code, setCode] = useState('')
@@ -17,7 +16,7 @@ export default function Assignment({ navigate }: Props) {
         </div>
         <h2 className="text-2xl font-bold font-display mb-2" style={{ color: '#F1F5F9' }}>Assignment Submitted!</h2>
         <p className="mb-6 text-center" style={{ color: '#64748B' }}>Your AI tutor is reviewing your submission. You'll get feedback within a few minutes.</p>
-        <button onClick={() => navigate('results')} className="px-6 py-3 rounded-xl font-semibold gradient-blue-purple text-white hover:opacity-90">
+        <button onClick={() => navigate('/results')} className="px-6 py-3 rounded-xl font-semibold gradient-blue-purple text-white hover:opacity-90">
           View Results
         </button>
       </div>

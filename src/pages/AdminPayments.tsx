@@ -1,11 +1,10 @@
 import { useState } from 'react'
 import { Search, Download, DollarSign } from 'lucide-react'
-import type { Page } from '../types'
+import { useNavigate } from 'react-router-dom'
 import { recentTransactions } from '../data/mockData'
 
-interface Props { navigate: (p: Page) => void }
-
-export default function AdminPayments({ navigate }: Props) {
+export default function AdminPayments() {
+  const navigate = useNavigate()
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('all')
 

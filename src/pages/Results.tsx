@@ -1,7 +1,5 @@
 import { CheckCircle, XCircle, Brain, ArrowRight, TrendingUp, Award } from 'lucide-react'
-import type { Page } from '../types'
-
-interface Props { navigate: (p: Page) => void }
+import { useNavigate } from 'react-router-dom'
 
 const breakdown = [
   { topic: 'Python Loops', score: 100, total: 30 },
@@ -10,7 +8,8 @@ const breakdown = [
   { topic: 'Coding Challenge', score: 12, total: 20 },
 ]
 
-export default function Results({ navigate }: Props) {
+export default function Results() {
+  const navigate = useNavigate()
   const totalScore = breakdown.reduce((a, b) => a + b.score, 0)
   const maxScore = breakdown.reduce((a, b) => a + b.total, 0)
   const pct = Math.round((totalScore / maxScore) * 100)
@@ -69,17 +68,17 @@ export default function Results({ navigate }: Props) {
             <p>⚠️ <strong style={{ color: '#F1F5F9' }}>Improve:</strong> Your coding challenge solution works but could be more Pythonic. Review string methods.</p>
             <p>📚 <strong style={{ color: '#F1F5F9' }}>Next steps:</strong> You are ready for Module 2 — Functions & OOP. I recommend starting with the functions lesson before tackling OOP.</p>
           </div>
-          <button onClick={() => navigate('ai-tutor')} className="mt-3 flex items-center gap-1.5 text-xs font-semibold" style={{ color: '#8B5CF6' }}>
+          <button onClick={() => navigate('/ai-tutor')} className="mt-3 flex items-center gap-1.5 text-xs font-semibold" style={{ color: '#8B5CF6' }}>
             Ask AI to explain mistakes <ArrowRight size={12} />
           </button>
         </div>
 
         <div className="flex gap-3">
-          <button onClick={() => navigate('course-learning')} className="flex-1 py-3 rounded-xl font-semibold text-sm border transition-all" style={{ borderColor: 'rgba(59,130,246,0.2)', color: '#94A3B8' }}>
+          <button onClick={() => navigate('/courses/1/learn')} className="flex-1 py-3 rounded-xl font-semibold text-sm border transition-all" style={{ borderColor: 'rgba(59,130,246,0.2)', color: '#94A3B8' }}>
             Continue Course
           </button>
           {passed && (
-            <button onClick={() => navigate('certificate')} className="flex-1 py-3 rounded-xl font-semibold text-sm gradient-blue-purple text-white flex items-center justify-center gap-2 hover:opacity-90">
+            <button onClick={() => navigate('/certificates')} className="flex-1 py-3 rounded-xl font-semibold text-sm gradient-blue-purple text-white flex items-center justify-center gap-2 hover:opacity-90">
               <Award size={16} /> View Certificate
             </button>
           )}

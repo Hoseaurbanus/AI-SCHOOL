@@ -1,7 +1,5 @@
 import { Brain, Award, BookOpen, AlertCircle, CheckCircle, Bell } from 'lucide-react'
-import type { Page } from '../types'
-
-interface Props { navigate: (p: Page) => void }
+import { useNavigate } from 'react-router-dom'
 
 const notifications = [
   { id: '1', type: 'ai', icon: Brain, title: 'AI Tutor Insight', message: "You've been consistent! Your loop comprehension improved by 34% this week. Ready for Module 2?", time: '2 hours ago', read: false, color: '#8B5CF6' },
@@ -12,7 +10,8 @@ const notifications = [
   { id: '6', type: 'ai', icon: Brain, title: 'Learning Suggestion', message: "Based on your progress, I recommend spending 20 minutes on list comprehensions before your next session.", time: '4 days ago', read: true, color: '#8B5CF6' },
 ]
 
-export default function Notifications({ navigate }: Props) {
+export default function Notifications() {
+  const navigate = useNavigate()
   const unread = notifications.filter(n => !n.read).length
 
   return (

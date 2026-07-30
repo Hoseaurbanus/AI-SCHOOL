@@ -3,14 +3,13 @@ import {
   Star, Clock, Users, Award, Brain, CheckCircle, ChevronDown,
   Play, Code2, BookOpen, Target, ArrowRight, Zap,
 } from 'lucide-react'
-import type { Page } from '../types'
+import { useNavigate } from 'react-router-dom'
 import { courses, curriculum } from '../data/mockData'
-
-interface Props { navigate: (p: Page) => void }
 
 const course = courses[0]
 
-export default function CourseDetails({ navigate }: Props) {
+export default function CourseDetails() {
+  const navigate = useNavigate()
   const [openModule, setOpenModule] = useState<number | null>(0)
   const [tab, setTab] = useState<'overview' | 'curriculum' | 'reviews'>('overview')
 
@@ -85,14 +84,14 @@ export default function CourseDetails({ navigate }: Props) {
                 <p className="text-xs mb-5" style={{ color: '#64748B' }}>One-time payment · Lifetime access</p>
 
                 <button
-                  onClick={() => navigate('checkout')}
+                  onClick={() => navigate('/checkout')}
                   className="w-full py-3.5 rounded-xl font-semibold text-sm mb-3 gradient-blue-purple text-white transition-all hover:opacity-90"
                   style={{ boxShadow: '0 0 20px rgba(59,130,246,0.3)' }}
                 >
                   Enroll Now
                 </button>
                 <button
-                  onClick={() => navigate('register')}
+                  onClick={() => navigate('/register')}
                   className="w-full py-3.5 rounded-xl font-semibold text-sm border transition-all"
                   style={{ borderColor: 'rgba(59,130,246,0.2)', color: '#94A3B8' }}
                 >

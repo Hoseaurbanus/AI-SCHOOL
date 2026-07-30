@@ -1,9 +1,8 @@
 import { CheckCircle, XCircle, ArrowRight, RefreshCw } from 'lucide-react'
-import type { Page } from '../types'
+import { useNavigate } from 'react-router-dom'
 
-interface Props { status: 'success' | 'failed'; navigate: (p: Page) => void }
-
-export default function PaymentStatus({ status, navigate }: Props) {
+export default function PaymentStatus({ status }: { status: 'success' | 'failed' }) {
+  const navigate = useNavigate()
   const ok = status === 'success'
 
   return (
@@ -49,14 +48,14 @@ export default function PaymentStatus({ status, navigate }: Props) {
 
         <div className="flex flex-col gap-3">
           <button
-            onClick={() => navigate(ok ? 'student-dashboard' : 'checkout')}
+            onClick={() => navigate(ok ? '/dashboard' : '/checkout')}
             className="w-full py-4 rounded-xl font-semibold gradient-blue-purple text-white flex items-center justify-center gap-2 hover:opacity-90 transition-all"
             style={{ boxShadow: '0 0 25px rgba(59,130,246,0.3)' }}
           >
             {ok ? <>Go to Dashboard <ArrowRight size={18} /></> : <><RefreshCw size={18} /> Try Again</>}
           </button>
           <button
-            onClick={() => navigate('marketplace')}
+            onClick={() => navigate('/marketplace')}
             className="w-full py-3 rounded-xl font-semibold text-sm border"
             style={{ borderColor: 'rgba(59,130,246,0.2)', color: '#94A3B8' }}
           >

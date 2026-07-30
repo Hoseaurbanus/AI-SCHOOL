@@ -1,11 +1,10 @@
 import { useState } from 'react'
 import { Plus, Edit, Eye, Trash2, Search, Star, Users, Brain } from 'lucide-react'
-import type { Page } from '../types'
+import { useNavigate } from 'react-router-dom'
 import { courses } from '../data/mockData'
 
-interface Props { navigate: (p: Page) => void }
-
-export default function AdminCourses({ navigate }: Props) {
+export default function AdminCourses() {
+  const navigate = useNavigate()
   const [search, setSearch] = useState('')
 
   const filtered = courses.filter(c =>

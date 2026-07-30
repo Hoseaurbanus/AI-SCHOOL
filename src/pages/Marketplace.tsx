@@ -1,14 +1,13 @@
 import { useState } from 'react'
 import { Search, SlidersHorizontal, Star, Brain, Clock, Users, ArrowRight } from 'lucide-react'
-import type { Page } from '../types'
+import { useNavigate } from 'react-router-dom'
 import { courses, categories } from '../data/mockData'
-
-interface Props { navigate: (p: Page) => void }
 
 const levels = ['All Levels', 'Beginner', 'Intermediate', 'Advanced']
 const sortOptions = ['Most Popular', 'Highest Rated', 'Newest', 'Price: Low to High', 'Price: High to Low']
 
-export default function Marketplace({ navigate }: Props) {
+export default function Marketplace() {
+  const navigate = useNavigate()
   const [search, setSearch] = useState('')
   const [activeCategory, setActiveCategory] = useState('All')
   const [activeLevel, setActiveLevel] = useState('All Levels')
@@ -158,7 +157,7 @@ export default function Marketplace({ navigate }: Props) {
             {filtered.map(course => (
               <button
                 key={course.id}
-                onClick={() => navigate('course-details')}
+                onClick={() => navigate('/courses/1')}
                 className="text-left rounded-2xl overflow-hidden border transition-all hover:-translate-y-1 group"
                 style={{ background: '#0D1421', borderColor: 'rgba(59,130,246,0.1)' }}
                 onMouseEnter={e => (e.currentTarget as HTMLElement).style.borderColor = 'rgba(59,130,246,0.3)'}

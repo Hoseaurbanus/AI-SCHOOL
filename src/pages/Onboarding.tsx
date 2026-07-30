@@ -1,8 +1,6 @@
 import { useState } from 'react'
 import { Brain, ArrowRight, CheckCircle, Zap, Sparkles } from 'lucide-react'
-import type { Page } from '../types'
-
-interface Props { navigate: (p: Page) => void }
+import { useNavigate } from 'react-router-dom'
 
 const steps = [
   {
@@ -23,7 +21,8 @@ const steps = [
   },
 ]
 
-export default function Onboarding({ navigate }: Props) {
+export default function Onboarding() {
+  const navigate = useNavigate()
   const [step, setStep] = useState(0)
   const [answers, setAnswers] = useState<string[]>([])
   const [selected, setSelected] = useState<string | null>(null)
@@ -79,7 +78,7 @@ export default function Onboarding({ navigate }: Props) {
           </div>
 
           <button
-            onClick={() => navigate('student-dashboard')}
+            onClick={() => navigate('/dashboard')}
             className="w-full py-4 rounded-xl font-semibold gradient-blue-purple text-white flex items-center justify-center gap-2 hover:opacity-90 transition-all"
             style={{ boxShadow: '0 0 25px rgba(59,130,246,0.35)' }}
           >

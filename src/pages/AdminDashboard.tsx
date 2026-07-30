@@ -1,8 +1,6 @@
 import { Users, BookOpen, TrendingUp, DollarSign, Award, Brain, ArrowRight, ArrowUpRight } from 'lucide-react'
-import type { Page } from '../types'
+import { useNavigate } from 'react-router-dom'
 import { adminStats, recentTransactions } from '../data/mockData'
-
-interface Props { navigate: (p: Page) => void }
 
 function StatCard({ icon: Icon, label, value, sub, color, trend }: {
   icon: React.ElementType; label: string; value: string; sub?: string; color: string; trend?: string
@@ -41,7 +39,8 @@ function MiniBarChart({ data, color }: { data: number[]; color: string }) {
   )
 }
 
-export default function AdminDashboard({ navigate }: Props) {
+export default function AdminDashboard() {
+  const navigate = useNavigate()
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-6">
       {/* Welcome */}
@@ -65,7 +64,7 @@ export default function AdminDashboard({ navigate }: Props) {
         <div className="lg:col-span-2 p-5 rounded-2xl" style={{ background: '#0D1421', border: '1px solid rgba(239,68,68,0.08)' }}>
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold font-display" style={{ color: '#F1F5F9' }}>Enrollments (Last 7 Days)</h3>
-            <button onClick={() => navigate('admin-analytics')} className="text-xs flex items-center gap-1" style={{ color: '#EF4444' }}>
+            <button onClick={() => navigate('/admin/analytics')} className="text-xs flex items-center gap-1" style={{ color: '#EF4444' }}>
               Full Report <ArrowRight size={12} />
             </button>
           </div>
@@ -118,14 +117,14 @@ export default function AdminDashboard({ navigate }: Props) {
             <h3 className="font-semibold font-display mb-3 text-sm" style={{ color: '#F1F5F9' }}>Quick Actions</h3>
             <div className="space-y-2">
               {[
-                { label: 'Add New Course', page: 'admin-courses' as Page, icon: BookOpen },
-                { label: 'Manage Users', page: 'admin-users' as Page, icon: Users },
-                { label: 'View Analytics', page: 'admin-analytics' as Page, icon: TrendingUp },
-                { label: 'AI Knowledge', page: 'admin-ai' as Page, icon: Brain },
-              ].map(({ label, page, icon: Icon }) => (
+                { label: 'Add New Course', path: '/admin/courses', icon: BookOpen },
+                { label: 'Manage Users', path: '/admin/users', icon: Users },
+                { label: 'View Analytics', path: '/admin/analytics', icon: TrendingUp },
+                { label: 'AI Knowledge', path: '/admin/ai', icon: Brain },
+              ].map(({ label, path, icon: Icon }) => (
                 <button
                   key={label}
-                  onClick={() => navigate(page)}
+                  onClick={() => navigate(path)}
                   className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all"
                   style={{ color: '#94A3B8', background: 'transparent' }}
                   onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(239,68,68,0.06)'; (e.currentTarget as HTMLElement).style.color = '#EF4444' }}
@@ -145,7 +144,7 @@ export default function AdminDashboard({ navigate }: Props) {
       <div className="rounded-2xl overflow-hidden" style={{ background: '#0D1421', border: '1px solid rgba(239,68,68,0.08)' }}>
         <div className="flex items-center justify-between p-5 border-b" style={{ borderColor: 'rgba(239,68,68,0.08)' }}>
           <h3 className="font-semibold font-display" style={{ color: '#F1F5F9' }}>Recent Transactions</h3>
-          <button onClick={() => navigate('admin-payments')} className="text-xs flex items-center gap-1" style={{ color: '#EF4444' }}>
+          <button onClick={() => navigate('/admin/payments')} className="text-xs flex items-center gap-1" style={{ color: '#EF4444' }}>
             View All <ArrowRight size={12} />
           </button>
         </div>

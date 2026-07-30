@@ -1,9 +1,8 @@
 import { ArrowRight, Home } from 'lucide-react'
-import type { Page } from '../types'
+import { useNavigate } from 'react-router-dom'
 
-interface Props { navigate: (p: Page) => void }
-
-export default function NotFound({ navigate }: Props) {
+export default function NotFound() {
+  const navigate = useNavigate()
   return (
     <div className="min-h-screen flex items-center justify-center px-6 mesh-bg">
       <div className="text-center max-w-md">
@@ -20,14 +19,14 @@ export default function NotFound({ navigate }: Props) {
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <button
-            onClick={() => navigate('landing')}
+            onClick={() => navigate('/')}
             className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold gradient-blue-purple text-white hover:opacity-90 transition-all"
             style={{ boxShadow: '0 0 20px rgba(59,130,246,0.25)' }}
           >
             <Home size={18} /> Go Home
           </button>
           <button
-            onClick={() => navigate('marketplace')}
+            onClick={() => navigate('/marketplace')}
             className="flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold border transition-all"
             style={{ borderColor: 'rgba(59,130,246,0.2)', color: '#94A3B8' }}
           >

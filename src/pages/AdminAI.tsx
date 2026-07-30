@@ -1,8 +1,6 @@
 import { useState } from 'react'
 import { Brain, Plus, Edit, Trash2, Upload, Save } from 'lucide-react'
-import type { Page } from '../types'
-
-interface Props { navigate: (p: Page) => void }
+import { useNavigate } from 'react-router-dom'
 
 const knowledgeBases = [
   { id: '1', name: 'Python for AI — Core Materials', course: 'Python for AI', docs: 24, updated: '2025-07-28', status: 'active' },
@@ -11,7 +9,8 @@ const knowledgeBases = [
   { id: '4', name: 'React & TypeScript Best Practices', course: 'React & TypeScript Mastery', docs: 31, updated: '2025-07-15', status: 'active' },
 ]
 
-export default function AdminAI({ navigate }: Props) {
+export default function AdminAI() {
+  const navigate = useNavigate()
   const [instructions, setInstructions] = useState(
     `You are a helpful and encouraging AI tutor for Smugflex AI Academy. Your role is to:\n\n1. Explain concepts clearly using analogies and real-world examples\n2. Ask questions back to verify student understanding\n3. Provide hints rather than complete answers for exercises\n4. Celebrate progress and maintain a positive, motivating tone\n5. Always relate new concepts to what the student already knows\n\nTone: Professional but friendly. Encouraging without being patronizing.\nLanguage: English. Use simple vocabulary first, then introduce technical terms.`
   )

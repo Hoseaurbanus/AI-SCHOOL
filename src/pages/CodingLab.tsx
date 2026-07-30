@@ -3,9 +3,7 @@ import {
   Play, ChevronRight, Brain, X, Plus, FolderOpen, Terminal, Globe,
   CheckCircle, AlertCircle, RefreshCw,
 } from 'lucide-react'
-import type { Page } from '../types'
-
-interface Props { navigate: (p: Page) => void }
+import { useNavigate } from 'react-router-dom'
 
 const files = [
   { name: 'main.py', active: true },
@@ -67,7 +65,8 @@ def sieve(n):
 
 **Score: 92/100** — Excellent work!`
 
-export default function CodingLab({ navigate }: Props) {
+export default function CodingLab() {
+  const navigate = useNavigate()
   const [code, setCode] = useState(defaultCode)
   const [ran, setRan] = useState(false)
   const [running, setRunning] = useState(false)

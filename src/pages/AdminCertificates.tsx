@@ -1,7 +1,5 @@
 import { Award, CheckCircle, Search, Download } from 'lucide-react'
-import type { Page } from '../types'
-
-interface Props { navigate: (p: Page) => void }
+import { useNavigate } from 'react-router-dom'
 
 const certs = [
   { id: 'SFA-ML-2025-E0K-1847', student: 'Emeka Okafor', course: 'Machine Learning Fundamentals', date: '2025-06-15', score: 94, status: 'issued' },
@@ -10,7 +8,8 @@ const certs = [
   { id: 'SFA-CY-2025-Y3A-4501', student: 'Yetunde Akinola', course: 'Cybersecurity Essentials', date: '2025-07-20', score: 79, status: 'pending' },
 ]
 
-export default function AdminCertificates({ navigate }: Props) {
+export default function AdminCertificates() {
+  const navigate = useNavigate()
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       <div className="flex items-start justify-between mb-6">

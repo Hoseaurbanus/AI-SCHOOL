@@ -1,9 +1,8 @@
 import { Download, Share2, Award, CheckCircle, QrCode } from 'lucide-react'
-import type { Page } from '../types'
+import { useNavigate } from 'react-router-dom'
 
-interface Props { navigate: (p: Page) => void }
-
-export default function Certificate({ navigate }: Props) {
+export default function Certificate() {
+  const navigate = useNavigate()
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       <div className="max-w-3xl">

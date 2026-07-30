@@ -2,10 +2,8 @@ import {
   ArrowRight, Brain, Code2, TrendingUp, Award, Flame, BookOpen,
   Clock, Target, CheckCircle, Star, Zap,
 } from 'lucide-react'
-import type { Page } from '../types'
+import { useNavigate } from 'react-router-dom'
 import { studentCourses, courses } from '../data/mockData'
-
-interface Props { navigate: (p: Page) => void }
 
 function StatCard({ icon: Icon, value, label, sub, color }: { icon: React.ElementType; value: string; label: string; sub?: string; color: string }) {
   return (
@@ -22,7 +20,8 @@ function StatCard({ icon: Icon, value, label, sub, color }: { icon: React.Elemen
   )
 }
 
-export default function StudentDashboard({ navigate }: Props) {
+export default function StudentDashboard() {
+  const navigate = useNavigate()
   const activeCourses = studentCourses.filter(c => c.status === 'active')
 
   return (
@@ -72,7 +71,7 @@ export default function StudentDashboard({ navigate }: Props) {
             You have been spending extra time on <strong style={{ color: '#F1F5F9' }}>Python loops</strong>. I noticed you attempted the exercise 3 times — let me explain it differently. Also, you are 3 lessons away from unlocking the <strong style={{ color: '#F1F5F9' }}>NumPy module</strong>.
           </p>
           <button
-            onClick={() => navigate('ai-tutor')}
+            onClick={() => navigate('/ai-tutor')}
             className="mt-3 flex items-center gap-1.5 text-xs font-semibold"
             style={{ color: '#8B5CF6' }}
           >
@@ -85,7 +84,7 @@ export default function StudentDashboard({ navigate }: Props) {
       <div>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-base font-bold font-display" style={{ color: '#F1F5F9' }}>Continue Learning</h2>
-          <button onClick={() => navigate('my-courses')} className="text-xs font-medium flex items-center gap-1" style={{ color: '#3B82F6' }}>
+          <button onClick={() => navigate('/my-courses')} className="text-xs font-medium flex items-center gap-1" style={{ color: '#3B82F6' }}>
             All Courses <ArrowRight size={12} />
           </button>
         </div>
@@ -93,7 +92,7 @@ export default function StudentDashboard({ navigate }: Props) {
           {activeCourses.map(c => (
             <button
               key={c.id}
-              onClick={() => navigate('course-learning')}
+              onClick={() => navigate('/courses/1/learn')}
               className="text-left p-4 rounded-2xl border transition-all hover:-translate-y-0.5 group"
               style={{ background: '#0D1421', borderColor: 'rgba(59,130,246,0.1)' }}
               onMouseEnter={e => (e.currentTarget as HTMLElement).style.borderColor = 'rgba(59,130,246,0.3)'}
@@ -132,14 +131,14 @@ export default function StudentDashboard({ navigate }: Props) {
           <h2 className="text-base font-bold font-display mb-4" style={{ color: '#F1F5F9' }}>Quick Actions</h2>
           <div className="grid grid-cols-2 gap-3">
             {[
-              { icon: Brain, label: 'Ask AI Tutor', sub: 'Get instant help', page: 'ai-tutor' as Page, color: '#8B5CF6' },
-              { icon: Code2, label: 'Coding Lab', sub: 'Practice coding', page: 'coding-lab' as Page, color: '#3B82F6' },
-              { icon: Target, label: 'Assignments', sub: '1 due tomorrow', page: 'assignment' as Page, color: '#F59E0B' },
-              { icon: Award, label: 'Certificates', sub: '1 earned', page: 'certificate' as Page, color: '#10B981' },
-            ].map(({ icon: Icon, label, sub, page, color }) => (
+              { icon: Brain, label: 'Ask AI Tutor', sub: 'Get instant help', path: '/ai-tutor', color: '#8B5CF6' },
+              { icon: Code2, label: 'Coding Lab', sub: 'Practice coding', path: '/coding-lab', color: '#3B82F6' },
+              { icon: Target, label: 'Assignments', sub: '1 due tomorrow', path: '/assignments', color: '#F59E0B' },
+              { icon: Award, label: 'Certificates', sub: '1 earned', path: '/certificates', color: '#10B981' },
+            ].map(({ icon: Icon, label, sub, path, color }) => (
               <button
                 key={label}
-                onClick={() => navigate(page)}
+                onClick={() => navigate(path)}
                 className="flex flex-col items-start gap-2 p-3.5 rounded-xl transition-all hover:scale-105"
                 style={{ background: `${color}0C`, border: `1px solid ${color}20` }}
               >
@@ -188,13 +187,13 @@ export default function StudentDashboard({ navigate }: Props) {
             <Zap size={16} className="inline mr-2" style={{ color: '#F59E0B' }} />
             Recommended for you
           </h2>
-          <button onClick={() => navigate('marketplace')} className="text-xs" style={{ color: '#3B82F6' }}>View all</button>
+          <button onClick={() => navigate('/marketplace')} className="text-xs" style={{ color: '#3B82F6' }}>View all</button>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {courses.slice(1, 4).map(c => (
             <button
               key={c.id}
-              onClick={() => navigate('course-details')}
+              onClick={() => navigate('/courses/1')}
               className="text-left flex gap-3 p-4 rounded-xl border transition-all"
               style={{ background: '#0D1421', borderColor: 'rgba(59,130,246,0.08)' }}
               onMouseEnter={e => (e.currentTarget as HTMLElement).style.borderColor = 'rgba(59,130,246,0.25)'}

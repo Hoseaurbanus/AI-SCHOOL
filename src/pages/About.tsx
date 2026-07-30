@@ -1,7 +1,5 @@
 import { Brain, Target, Users, Award, ArrowRight } from 'lucide-react'
-import type { Page } from '../types'
-
-interface Props { navigate: (p: Page) => void }
+import { useNavigate } from 'react-router-dom'
 
 const team = [
   { name: 'Adaora Obi', role: 'CEO & Co-Founder', img: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=120&h=120&fit=crop&auto=format', bio: 'Former AI researcher at Google, passionate about democratizing quality education across Africa.' },
@@ -10,7 +8,8 @@ const team = [
   { name: 'Kelechi Okafor', role: 'Head of AI', img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&h=120&fit=crop&auto=format', bio: 'ML engineer specializing in NLP and personalized learning AI. Built the AI tutor from scratch.' },
 ]
 
-export default function About({ navigate }: Props) {
+export default function About() {
+  const navigate = useNavigate()
   return (
     <div style={{ background: '#060A12', minHeight: '100vh' }}>
       {/* Hero */}
@@ -115,7 +114,7 @@ export default function About({ navigate }: Props) {
         </h2>
         <p className="mb-8" style={{ color: '#64748B' }}>Join 12,847 learners already building their future.</p>
         <button
-          onClick={() => navigate('register')}
+          onClick={() => navigate('/register')}
           className="inline-flex items-center gap-2.5 px-8 py-4 rounded-xl font-semibold gradient-blue-purple text-white hover:opacity-90 transition-all"
           style={{ boxShadow: '0 0 30px rgba(59,130,246,0.3)' }}
         >

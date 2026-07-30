@@ -1,11 +1,10 @@
 import { useState } from 'react'
 import { Search, UserCheck, UserX, Edit, Eye, ArrowUpDown } from 'lucide-react'
-import type { Page } from '../types'
+import { useNavigate } from 'react-router-dom'
 import { users } from '../data/mockData'
 
-interface Props { navigate: (p: Page) => void }
-
-export default function AdminUsers({ navigate }: Props) {
+export default function AdminUsers() {
+  const navigate = useNavigate()
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('all')
 

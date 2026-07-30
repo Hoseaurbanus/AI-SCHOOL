@@ -1,9 +1,8 @@
 import { User, Mail, Phone, Edit3, Star, Award, BookOpen, TrendingUp } from 'lucide-react'
-import type { Page } from '../types'
+import { useNavigate } from 'react-router-dom'
 
-interface Props { navigate: (p: Page) => void }
-
-export default function Profile({ navigate }: Props) {
+export default function Profile() {
+  const navigate = useNavigate()
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       <div className="max-w-3xl">
@@ -33,7 +32,7 @@ export default function Profile({ navigate }: Props) {
                   <p className="text-sm" style={{ color: '#64748B' }}>Scholar Plan · Member since March 2025</p>
                 </div>
                 <button
-                  onClick={() => navigate('settings')}
+                  onClick={() => navigate('/settings')}
                   className="px-3 py-1.5 rounded-lg text-xs font-medium border"
                   style={{ borderColor: 'rgba(59,130,246,0.2)', color: '#94A3B8' }}
                 >

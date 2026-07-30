@@ -1,13 +1,12 @@
 import { useState } from 'react'
 import { ArrowRight, Clock, CheckCircle, BookOpen, Award } from 'lucide-react'
-import type { Page } from '../types'
+import { useNavigate } from 'react-router-dom'
 import { studentCourses, courses } from '../data/mockData'
-
-interface Props { navigate: (p: Page) => void }
 
 const tabs = ['All', 'Active', 'Completed', 'Saved']
 
-export default function MyCourses({ navigate }: Props) {
+export default function MyCourses() {
+  const navigate = useNavigate()
   const [tab, setTab] = useState('All')
 
   const displayed = tab === 'All'
@@ -58,7 +57,7 @@ export default function MyCourses({ navigate }: Props) {
         <div className="text-center py-16">
           <BookOpen size={40} className="mx-auto mb-3" style={{ color: '#475569' }} />
           <p className="font-semibold" style={{ color: '#94A3B8' }}>No saved courses yet</p>
-          <button onClick={() => navigate('marketplace')} className="mt-3 text-sm font-medium" style={{ color: '#3B82F6' }}>
+          <button onClick={() => navigate('/marketplace')} className="mt-3 text-sm font-medium" style={{ color: '#3B82F6' }}>
             Browse Courses →
           </button>
         </div>
@@ -67,7 +66,7 @@ export default function MyCourses({ navigate }: Props) {
           {displayed.map(c => (
             <button
               key={c.id}
-              onClick={() => navigate('course-learning')}
+              onClick={() => navigate('/courses/1/learn')}
               className="text-left rounded-2xl overflow-hidden border transition-all hover:-translate-y-1 group"
               style={{ background: '#0D1421', borderColor: 'rgba(59,130,246,0.1)' }}
               onMouseEnter={e => (e.currentTarget as HTMLElement).style.borderColor = 'rgba(59,130,246,0.3)'}

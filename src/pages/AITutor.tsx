@@ -1,8 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { Brain, Send, Upload, Sparkles, Code2, BookOpen, X, Paperclip } from 'lucide-react'
-import type { Page } from '../types'
-
-interface Props { navigate: (p: Page) => void }
+import { useNavigate } from 'react-router-dom'
 
 type Message = { role: 'user' | 'ai'; text: string; code?: string; time: string }
 
@@ -29,7 +27,8 @@ const aiResponses: Record<string, { text: string; code?: string }> = {
   },
 }
 
-export default function AITutor({ navigate }: Props) {
+export default function AITutor() {
+  const navigate = useNavigate()
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'ai',

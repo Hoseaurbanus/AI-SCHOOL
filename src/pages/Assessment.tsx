@@ -1,8 +1,6 @@
 import { useState } from 'react'
 import { Clock, ChevronRight, CheckCircle, Code2 } from 'lucide-react'
-import type { Page } from '../types'
-
-interface Props { navigate: (p: Page) => void }
+import { useNavigate } from 'react-router-dom'
 
 const questions = [
   {
@@ -41,7 +39,8 @@ const questions = [
   },
 ]
 
-export default function Assessment({ navigate }: Props) {
+export default function Assessment() {
+  const navigate = useNavigate()
   const [current, setCurrent] = useState(0)
   const [answers, setAnswers] = useState<(number | string)[]>([])
   const [codeAnswer, setCodeAnswer] = useState('')
@@ -56,7 +55,7 @@ export default function Assessment({ navigate }: Props) {
 
   const next = () => {
     if (current < questions.length - 1) setCurrent(c => c + 1)
-    else { setSubmitted(true); navigate('results') }
+    else { setSubmitted(true); navigate('/results') }
   }
 
   const select = (i: number) => {

@@ -3,12 +3,11 @@ import {
   Play, CheckCircle, ChevronDown, Brain, Code2, FileText, BookOpen,
   Target, MessageSquare, ArrowRight, X, Maximize2,
 } from 'lucide-react'
-import type { Page } from '../types'
+import { useNavigate } from 'react-router-dom'
 import { curriculum, courses } from '../data/mockData'
 
-interface Props { navigate: (p: Page) => void }
-
-export default function CourseLearning({ navigate }: Props) {
+export default function CourseLearning() {
+  const navigate = useNavigate()
   const [openModule, setOpenModule] = useState<number | null>(0)
   const [tab, setTab] = useState<'lesson' | 'notes' | 'resources'>('lesson')
   const [aiMessage, setAiMessage] = useState('')
@@ -24,7 +23,7 @@ export default function CourseLearning({ navigate }: Props) {
     setChatMessages(p => [
       ...p,
       { role: 'user', text: userMsg },
-      { role: 'ai', text: `Great question! In Python, ${userMsg.toLowerCase().includes('for') ? 'for loops iterate over sequences — lists, ranges, strings, dicts. The syntax is: `for item in iterable:`. The range() function is your best friend here.' : 'that is a fundamental concept. Let me break it down step by step with an example...'}` },
+      { role: 'ai', text: 'Great question! In Python, ' + (userMsg.toLowerCase().includes('for') ? 'for loops iterate over sequences — lists, ranges, strings, dicts. The syntax is: for item in iterable. The range() function is your best friend here.' : 'that is a fundamental concept. Let me break it down step by step with an example...') },
     ])
   }
 
@@ -186,13 +185,13 @@ while count < 5:
 
                   <div className="flex gap-3">
                     <button
-                      onClick={() => navigate('coding-lab')}
+                      onClick={() => navigate('/coding-lab')}
                       className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold gradient-blue-purple text-white hover:opacity-90"
                     >
                       <Code2 size={16} /> Practice in Lab
                     </button>
                     <button
-                      onClick={() => navigate('ai-tutor')}
+                      onClick={() => navigate('/ai-tutor')}
                       className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold border"
                       style={{ borderColor: 'rgba(139,92,246,0.3)', color: '#8B5CF6' }}
                     >

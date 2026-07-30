@@ -1,9 +1,7 @@
 import { useState } from 'react'
 import { CheckCircle, Lock, CreditCard, ArrowRight, Zap } from 'lucide-react'
-import type { Page } from '../types'
+import { useNavigate } from 'react-router-dom'
 import { courses } from '../data/mockData'
-
-interface Props { navigate: (p: Page) => void }
 
 const course = courses[0]
 const methods = [
@@ -12,7 +10,8 @@ const methods = [
   { id: 'bank', name: 'Bank Transfer', desc: 'Transfer to our bank account', icon: '🏦' },
 ]
 
-export default function Checkout({ navigate }: Props) {
+export default function Checkout() {
+  const navigate = useNavigate()
   const [method, setMethod] = useState('paystack')
   const [loading, setLoading] = useState(false)
 
@@ -20,7 +19,7 @@ export default function Checkout({ navigate }: Props) {
     setLoading(true)
     setTimeout(() => {
       setLoading(false)
-      navigate('payment-success')
+      navigate('/payment-success')
     }, 1500)
   }
 

@@ -1,8 +1,6 @@
 import { useState } from 'react'
 import { User, Lock, Bell, Palette, Shield, ChevronRight } from 'lucide-react'
-import type { Page } from '../types'
-
-interface Props { navigate: (p: Page) => void }
+import { useNavigate } from 'react-router-dom'
 
 const sections = [
   { icon: User, label: 'Account', id: 'account' },
@@ -12,7 +10,8 @@ const sections = [
   { icon: Shield, label: 'Privacy', id: 'privacy' },
 ]
 
-export default function Settings({ navigate }: Props) {
+export default function Settings() {
+  const navigate = useNavigate()
   const [active, setActive] = useState('account')
   const [notifications, setNotifications] = useState({
     email: true, push: true, assignments: true, ai: false, marketing: false,

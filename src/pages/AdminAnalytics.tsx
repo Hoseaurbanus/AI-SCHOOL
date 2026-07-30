@@ -1,6 +1,4 @@
-import type { Page } from '../types'
-
-interface Props { navigate: (p: Page) => void }
+import { useNavigate } from 'react-router-dom'
 
 function BarChart({ data, labels, color, height = 120 }: { data: number[]; labels: string[]; color: string; height?: number }) {
   const max = Math.max(...data)
@@ -48,7 +46,8 @@ function DonutChart({ value, total, color }: { value: number; total: number; col
   )
 }
 
-export default function AdminAnalytics({ navigate }: Props) {
+export default function AdminAnalytics() {
+  const navigate = useNavigate()
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-6">
       <div>

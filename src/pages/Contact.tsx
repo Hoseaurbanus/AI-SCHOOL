@@ -1,10 +1,9 @@
 import { useState } from 'react'
 import { Mail, Phone, MapPin, Send, CheckCircle } from 'lucide-react'
-import type { Page } from '../types'
+import { useNavigate } from 'react-router-dom'
 
-interface Props { navigate: (p: Page) => void }
-
-export default function Contact({ navigate }: Props) {
+export default function Contact() {
+  const navigate = useNavigate()
   const [sent, setSent] = useState(false)
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' })
 
@@ -47,7 +46,7 @@ export default function Contact({ navigate }: Props) {
               <p className="text-sm font-semibold mb-1" style={{ color: '#8B5CF6' }}>Need instant help?</p>
               <p className="text-xs mb-3" style={{ color: '#64748B' }}>Our AI support agent can answer most questions instantly.</p>
               <button
-                onClick={() => navigate('register')}
+                onClick={() => navigate('/register')}
                 className="text-xs font-semibold px-3 py-1.5 rounded-lg"
                 style={{ background: 'rgba(139,92,246,0.15)', color: '#8B5CF6' }}
               >

@@ -1,7 +1,5 @@
 import { Code2, Star, ExternalLink, Award } from 'lucide-react'
-import type { Page } from '../types'
-
-interface Props { navigate: (p: Page) => void }
+import { useNavigate } from 'react-router-dom'
 
 const projects = [
   {
@@ -39,7 +37,8 @@ const projects = [
   },
 ]
 
-export default function Portfolio({ navigate }: Props) {
+export default function Portfolio() {
+  const navigate = useNavigate()
   return (
     <div className="p-4 sm:p-6 lg:p-8">
       <div className="mb-6 flex items-start justify-between">
