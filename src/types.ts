@@ -97,6 +97,66 @@ export interface Course {
   projects: number;
 }
 
+export interface Lesson {
+  id: string;
+  title: string;
+  duration: string;
+  type: 'video' | 'reading' | 'exercise' | 'quiz';
+  completed?: boolean;
+}
+
+export interface CourseModule {
+  id: string;
+  title: string;
+  description: string;
+  lessons: Lesson[];
+  duration: string;
+}
+
+export interface CourseReview {
+  id: string;
+  userId: string;
+  userName: string;
+  userAvatar: string;
+  rating: number;
+  comment: string;
+  date: string;
+  helpful: number;
+}
+
+export interface CartItem {
+  courseId: string;
+  addedAt: string;
+}
+
+export interface Enrollment {
+  id: string;
+  courseId: string;
+  userId: string;
+  status: 'active' | 'completed' | 'paused' | 'saved';
+  progress: number;
+  enrolledAt: string;
+  completedAt?: string;
+  lastAccessedAt: string;
+  currentModule: number;
+  currentLesson: number;
+}
+
+export interface CourseFilter {
+  search: string;
+  category: string;
+  level: string;
+  sortBy: string;
+  priceRange: [number, number];
+}
+
+export interface PaymentMethod {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+}
+
 export interface NavProps {
   navigate: (page: Page) => void;
   currentPage: Page;
