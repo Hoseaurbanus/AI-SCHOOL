@@ -1,12 +1,10 @@
 import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
-import NotFound from './pages/NotFound';
 import { useState } from 'react';
 import {
   ArrowRight, Play, Sparkles, Brain, Code2, Award, Target,
   Zap, Star, ChevronDown, CheckCircle, Users, BookOpen, TrendingUp,
 } from 'lucide-react';
-import { courses, categories, testimonials, pricingPlans, faqs } from './data/mockData';
+import { courses, categories, testimonials, pricingPlans, faqs } from '../data/mockData';
 
 function StatBadge({ value, label }: { value: string; label: string }) {
   return (
