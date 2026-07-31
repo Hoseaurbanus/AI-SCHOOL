@@ -1,6 +1,6 @@
 import { http, HttpResponse } from 'msw';
-import { courses, curriculum, courseReviews, enrolledCourses, studentStats, aiInsights, chatHistory } from '../data/mockData';
-import type { ChatMessage } from '../types';
+import { courses, curriculum, courseReviews, enrolledCourses, studentStats, aiInsights, chatHistory, adminStats, recentTransactions, users, certificates, knowledgeBases } from '../data/mockData';
+import type { ChatMessage, Course } from '../types';
 
 const mockUser = {
   id: 'usr_001',
@@ -253,6 +253,194 @@ export const handlers = [
     return HttpResponse.json({
       success: true,
       data: `Code Review:\n\n✅ Good practices:\n- Clear variable naming\n- Proper function structure\n\n💡 Suggestions:\n- Consider adding error handling\n- Add docstrings for better documentation`,
+    });
+  }),
+
+  // Admin handlers
+  http.get('/api/admin/stats', () => {
+    return HttpResponse.json({
+      success: true,
+      data: adminStats,
+    });
+  }),
+
+  http.get('/api/admin/courses', () => {
+    return HttpResponse.json({
+      success: true,
+      data: courses,
+    });
+  }),
+
+  http.post('/api/admin/courses', async ({ request }) => {
+    const body = await request.json() as Partial<Course>;
+    const newCourse: Course = {
+      id: `c${Date.now()}`,
+      title: body.title || 'New Course',
+      category: body.category || 'Programming',
+      level: body.level || 'Beginner',
+      duration: body.duration || '8 weeks',
+      rating: 0,
+      students: 0,
+      price: body.price || 0,
+      image: body.image || '',
+      instructor: body.instructor || '',
+      description: body.description || '',
+      aiTutor: body.aiTutor ?? false,
+      featured: body.featured ?? false,
+      tags: body.tags || [],
+      lessons: body.lessons || 0,
+      projects: body.projects || 0,
+    };
+    return HttpResponse.json({
+      success: true,
+      data: newCourse,
+    });
+  }),
+
+  http.put('/api/admin/courses/:id', async ({ params, request }) => {
+    const body = await request.json() as Partial<Course>;
+    const course = courses.find((c) => c.id === params.id);
+    if (!course) {
+      return HttpResponse.json(
+        { success: false, message: 'Course not found' },
+        { status: 404 }
+      );
+    }
+    return HttpResponse.json({
+      success: true,
+      data: { ...course, ...body },
+    });
+  }),
+
+  http.delete('/api/admin/courses/:id', ({ params }) => {
+    const course = courses.find((c) => c.id === params.id);
+    if (!course) {
+      return HttpResponse.json(
+        { success: false, message: 'Course not found' },
+        { status: 404 }
+      );
+    }
+    return HttpResponse.json({
+      success: true,
+      data: null,
+    });
+  }),
+
+  http.get('/api/admin/users', () => {
+    return HttpResponse.json({
+      success: true,
+      data: users,
+    });
+  }),
+
+  http.post('/api/admin/users', async ({ request }) => {
+    const body = await request.json() as Record<string, unknown>;
+    const newUser = {
+      id: `STU-${Date.now()}`,
+      name: (body.name as string) || 'New User',
+      email: (body.email as string) || '',
+      courses: 0,
+      progress: 0,
+      joined: new Date().toISOString().split('T')[0],
+      status: 'active',
+      role: (body.role as string) || 'student',
+    };
+    return HttpResponse.json({
+      success: true,
+      data: newUser,
+    });
+  }),
+
+  http.put('/api/admin/users/:id', async ({ params, request }) => {
+    const body = await request.json() as Record<string, unknown>;
+    const user = users.find((u) => u.id === params.id);
+    if (!user) {
+      return HttpResponse.json(
+        { success: false, message: 'User not found' },
+        { status: 404 }
+      );
+    }
+    return HttpResponse.json({
+      success: true,
+      data: { ...user, ...body },
+    });
+  }),
+
+  http.delete('/api/admin/users/:id', ({ params }) => {
+    const user = users.find((u) => u.id === params.id);
+    if (!user) {
+      return HttpResponse.json(
+        { success: false, message: 'User not found' },
+        { status: 404 }
+      );
+    }
+    return HttpResponse.json({
+      success: true,
+      data: null,
+    });
+  }),
+
+  http.get('/api/admin/transactions', () => {
+    return HttpResponse.json({
+      success: true,
+      data: recentTransactions,
+    });
+  }),
+
+  http.get('/api/admin/certificates', () => {
+    return HttpResponse.json({
+      success: true,
+      data: certificates,
+    });
+  }),
+
+  http.get('/api/admin/certificates/:id/verify', ({ params }) => {
+    const cert = certificates.find((c) => c.id === params.id);
+    if (!cert) {
+      return HttpResponse.json(
+        { success: false, message: 'Certificate not found' },
+        { status: 404 }
+      );
+    }
+    return HttpResponse.json({
+      success: true,
+      data: { ...cert, verified: true },
+    });
+  }),
+
+  http.get('/api/admin/knowledge-bases', () => {
+    return HttpResponse.json({
+      success: true,
+      data: knowledgeBases,
+    });
+  }),
+
+  http.post('/api/admin/knowledge-bases', async ({ request }) => {
+    const body = await request.json() as Record<string, unknown>;
+    const newKb = {
+      id: `KB-${Date.now()}`,
+      name: (body.name as string) || 'New Knowledge Base',
+      courseId: (body.courseId as string) || '',
+      documents: 0,
+      lastUpdated: new Date().toISOString().split('T')[0],
+    };
+    return HttpResponse.json({
+      success: true,
+      data: newKb,
+    });
+  }),
+
+  http.delete('/api/admin/knowledge-bases/:id', ({ params }) => {
+    const kb = knowledgeBases.find((k) => k.id === params.id);
+    if (!kb) {
+      return HttpResponse.json(
+        { success: false, message: 'Knowledge base not found' },
+        { status: 404 }
+      );
+    }
+    return HttpResponse.json({
+      success: true,
+      data: null,
     });
   }),
 ];
