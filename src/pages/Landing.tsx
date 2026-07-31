@@ -5,6 +5,8 @@ import {
   Zap, Star, ChevronDown, CheckCircle, Users, BookOpen, TrendingUp,
 } from 'lucide-react';
 import { courses, categories, testimonials, pricingPlans, faqs } from '../data/mockData';
+import CourseCard from '../components/course/CourseCard';
+import { useFeaturedCourses } from '../hooks/useCourses';
 
 function StatBadge({ value, label }: { value: string; label: string }) {
   return (
@@ -35,6 +37,8 @@ function FeatureCard({ icon: Icon, title, desc, color }: { icon: React.ElementTy
 export default function Landing() {
   const navigate = useNavigate();
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const { data: featuredData } = useFeaturedCourses();
+  const featuredCourses = featuredData?.data || courses.filter(c => c.featured).slice(0, 3);
 
   return (
     <div style={{ background: '#060A12' }}>
@@ -318,47 +322,9 @@ export default function Landing() {
             </button>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-            {courses.filter(c => c.featured).map(course => (
-              <button
-                key={course.id}
-                onClick={() => navigate(`/courses/${course.id}`)}
-                className="text-left rounded-2xl overflow-hidden border transition-all hover:-translate-y-1 group"
-                style={{ background: '#0D1421', borderColor: 'rgba(59,130,246,0.1)' }}
-                onMouseEnter={e => (e.currentTarget as HTMLElement).style.borderColor = 'rgba(59,130,246,0.3)'}
-                onMouseLeave={e => (e.currentTarget as HTMLElement).style.borderColor = 'rgba(59,130,246,0.1)'}
-              >
-                <div className="relative h-36 overflow-hidden">
-                  <img src={course.image} alt={course.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(13,20,33,0.8) 0%, transparent 60%)' }} />
-                  {course.aiTutor && (
-                    <div className="absolute top-2 left-2 flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold" style={{ background: 'rgba(139,92,246,0.85)', color: '#fff' }}>
-                      <Brain size={10} /> AI Tutor
-                    </div>
-                  )}
-                  <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded-md text-xs" style={{ background: 'rgba(6,10,18,0.8)', color: '#94A3B8' }}>
-                    {course.level}
-                  </div>
-                </div>
-                <div className="p-4">
-                  <h3 className="font-semibold text-sm mb-2 line-clamp-2 font-display" style={{ color: '#F1F5F9' }}>{course.title}</h3>
-                  <p className="text-xs mb-3 line-clamp-2" style={{ color: '#64748B' }}>{course.description}</p>
-                  <div className="flex items-center justify-between text-xs mb-3">
-                    <div className="flex items-center gap-1">
-                      <Star size={12} fill="#F59E0B" style={{ color: '#F59E0B' }} />
-                      <span style={{ color: '#F59E0B' }}>{course.rating}</span>
-                      <span style={{ color: '#475569' }}>({course.students.toLocaleString()})</span>
-                    </div>
-                    <span style={{ color: '#475569' }}>{course.duration}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-base gradient-text font-display">₦{course.price.toLocaleString()}</span>
-                    <span className="text-xs px-2 py-1 rounded-lg" style={{ background: 'rgba(59,130,246,0.1)', color: '#3B82F6' }}>
-                      {course.lessons} lessons
-                    </span>
-                  </div>
-                </div>
-              </button>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {featuredCourses.map((course) => (
+              <CourseCard key={course.id} course={course} />
             ))}
           </div>
         </div>
