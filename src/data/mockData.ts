@@ -1,4 +1,4 @@
-import type { Course, CourseModule, CourseReview, Enrollment, ChatMessage, AIInsight, StudentStats, LearningStreak, LessonContent, Resource } from '../types';
+import type { Course, CourseModule, CourseReview, Enrollment, ChatMessage, AIInsight, StudentStats, LearningStreak, LessonContent, Resource, CodeExercise } from '../types';
 
 export const courses: Course[] = [
   {
@@ -416,6 +416,51 @@ export const resources: Record<string, Resource[]> = {
     { id: 'res_005', title: 'Infinite Loop Debugger', type: 'zip', url: '#', size: '890 KB' },
   ],
 };
+
+export const exercises: CodeExercise[] = [
+  {
+    id: 'ex_001',
+    title: 'Build a Hello World Page',
+    language: 'html',
+    description: 'Create an HTML page with a heading and a paragraph.',
+    starterCode: `<!DOCTYPE html>\n<html>\n<head>\n  <title>My Page</title>\n</head>\n<body>\n  <!-- Add your content here -->\n</body>\n</html>`,
+  },
+  {
+    id: 'ex_002',
+    title: 'Style a Card Component',
+    language: 'html',
+    description: 'Create a styled card with image, title, and description.',
+    starterCode: `<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    /* Add your styles here */\n  </style>\n</head>\n<body>\n  <div class="card">\n    <img src="https://via.placeholder.com/300" alt="Preview">\n    <h2>Card Title</h2>\n    <p>Card description goes here.</p>\n  </div>\n</body>\n</html>`,
+  },
+  {
+    id: 'ex_003',
+    title: 'Python Variables and Types',
+    language: 'python',
+    description: 'Practice declaring variables and working with different data types.',
+    starterCode: `# Declare variables of different types\nname = "Alice"\nage = 25\nheight = 5.6\nis_student = True\n\n# Print them\nprint(f"Name: {name}")\nprint(f"Age: {age}")\nprint(f"Height: {height}")\nprint(f"Student: {is_student}")`,
+  },
+  {
+    id: 'ex_004',
+    title: 'Python List Operations',
+    language: 'python',
+    description: 'Practice working with lists: append, remove, sort, and slice.',
+    starterCode: `# Create a list of numbers\nnumbers = [5, 2, 8, 1, 9]\n\n# Sort the list\nnumbers.sort()\nprint(f"Sorted: {numbers}")\n\n# Add a number\nnumbers.append(3)\nprint(f"After append: {numbers}")\n\n# Remove a number\nnumbers.remove(1)\nprint(f"After remove: {numbers}")\n\n# Slice: get first 3 elements\nprint(f"First 3: {numbers[:3]}")`,
+  },
+  {
+    id: 'ex_005',
+    title: 'Write a README',
+    language: 'markdown',
+    description: 'Create a professional README file for a project.',
+    starterCode: `# My Project\n\n## Description\n\nWrite a brief description here.\n\n## Installation\n\n\`\`\`bash\nnpm install my-project\n\`\`\`\n\n## Usage\n\n\`\`\`javascript\nconst myProject = require('my-project');\nmyProject.doSomething();\n\`\`\`\n\n## License\n\nMIT`,
+  },
+  {
+    id: 'ex_006',
+    title: 'API Documentation',
+    language: 'markdown',
+    description: 'Document an API endpoint with parameters and examples.',
+    starterCode: `# API Reference\n\n## GET /api/users\n\nReturns a list of all users.\n\n### Parameters\n\n| Name | Type | Description |\n|------|------|-------------|\n| limit | number | Max results |\n| offset | number | Pagination offset |\n\n### Response\n\n\`\`\`json\n{\n  "users": [\n    { "id": 1, "name": "Alice" }\n  ]\n}\n\`\`\``,
+  },
+];
 
 export const courseReviews: CourseReview[] = [
   {
