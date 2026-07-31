@@ -1,5 +1,6 @@
 import { http, HttpResponse } from 'msw';
-import { courses, curriculum, courseReviews, enrolledCourses } from '../data/mockData';
+import { courses, curriculum, courseReviews, enrolledCourses, studentStats, aiInsights, chatHistory } from '../data/mockData';
+import type { ChatMessage } from '../types';
 
 const mockUser = {
   id: 'usr_001',
@@ -202,4 +203,74 @@ export const handlers = [
       data: enrollment,
     });
   }),
+
+  // AI & Stats handlers
+  http.get('/api/ai/stats', () => {
+    return HttpResponse.json({
+      success: true,
+      data: studentStats,
+    });
+  }),
+
+  http.get('/api/ai/insights', () => {
+    return HttpResponse.json({
+      success: true,
+      data: aiInsights,
+    });
+  }),
+
+  http.get('/api/ai/chat/history', () => {
+    return HttpResponse.json({
+      success: true,
+      data: chatHistory,
+    });
+  }),
+
+  http.post('/api/ai/chat', async ({ request }) => {
+    const { content } = await request.json() as { content: string };
+
+    // Simulate AI response delay
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    const aiResponse: ChatMessage = {
+      id: `ai-${Date.now()}`,
+      role: 'ai',
+      content: getAIResponse(content),
+      timestamp: new Date().toISOString(),
+    };
+
+    return HttpResponse.json({
+      success: true,
+      data: aiResponse,
+    });
+  }),
+
+  http.post('/api/ai/code-review', async ({ request }) => {
+    const { code } = await request.json() as { code: string };
+
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+
+    return HttpResponse.json({
+      success: true,
+      data: `Code Review:\n\n✅ Good practices:\n- Clear variable naming\n- Proper function structure\n\n💡 Suggestions:\n- Consider adding error handling\n- Add docstrings for better documentation`,
+    });
+  }),
 ];
+
+function getAIResponse(userMessage: string): string {
+  const lower = userMessage.toLowerCase();
+
+  if (lower.includes('list') && lower.includes('comprehension')) {
+    return "List comprehensions are a concise way to create lists in Python. They follow the syntax: [expression for item in iterable if condition].\n\nHere are some examples:\n1. Basic: [x**2 for x in range(10)]\n2. With condition: [x for x in range(20) if x % 2 == 0]\n3. With function: [w.upper() for w in words]\n\nWould you like me to explain any of these in more detail?";
+  }
+
+  if (lower.includes('recursion')) {
+    return "Recursion is when a function calls itself to solve a smaller version of the same problem. Think of it like Russian nesting dolls — each doll contains a smaller version of itself.\n\nKey rule: every recursive function needs a base case that stops the recursion, otherwise it runs forever.";
+  }
+
+  if (lower.includes('loop') || lower.includes('for') || lower.includes('while')) {
+    return "Loops are fundamental in programming! In Python:\n\n1. for loop: iterates over a sequence\n2. while loop: repeats while a condition is true\n\nCommon mistakes:\n- Off-by-one errors\n- Infinite loops (forgetting to update the condition)\n- Modifying a list while iterating over it\n\nWhat specific aspect would you like to explore?";
+  }
+
+  return "That's a great question! Let me help you understand this concept better.\n\nI can explain the theory, show you practical examples, or help you debug code. What would be most helpful for you right now?";
+}
