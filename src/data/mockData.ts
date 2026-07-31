@@ -1,4 +1,4 @@
-import type { Course, CourseModule, CourseReview, Enrollment, ChatMessage, AIInsight, StudentStats, LearningStreak, LessonContent, Resource, CodeExercise, AdminStats, Transaction, Certificate, KnowledgeBase, Assessment, CertificateData, Notification } from '../types';
+import type { Course, CourseModule, CourseReview, Enrollment, ChatMessage, AIInsight, StudentStats, LearningStreak, LessonContent, Resource, CodeExercise, AdminStats, Transaction, Certificate, KnowledgeBase, Assessment, CertificateData, Notification, Assignment, AssignmentSubmission } from '../types';
 
 export const courses: Course[] = [
   {
@@ -1033,5 +1033,89 @@ export const notifications: Notification[] = [
     timestamp: '2026-07-20T09:00:00Z',
     read: true,
     actionUrl: '/profile',
+  },
+];
+
+export const assignments: Assignment[] = [
+  {
+    id: 'assign_001',
+    courseId: '1',
+    title: 'Python Functions & Control Flow',
+    description: 'Write a set of Python functions that demonstrate mastery of conditionals, loops, and function composition. Include docstrings and type hints.',
+    requirements: [
+      { text: 'Implement a function that calculates factorials using recursion', points: 15 },
+      { text: 'Write a function that checks for prime numbers', points: 15 },
+      { text: 'Create a function that flattens a nested list', points: 20 },
+      { text: 'Include proper docstrings and type hints for all functions', points: 10 },
+    ],
+    dueDate: '2026-08-15',
+    totalPoints: 60,
+    language: 'python',
+    starterCode: `def factorial(n: int) -> int:\n    """Calculate the factorial of n recursively."""\n    pass\n\ndef is_prime(n: int) -> bool:\n    """Check if a number is prime."""\n    pass\n\ndef flatten(nested: list) -> list:\n    """Flatten a deeply nested list."""\n    pass`,
+  },
+  {
+    id: 'assign_002',
+    courseId: '4',
+    title: 'React Component Library',
+    description: 'Build a reusable Button component system with variants, sizes, and proper TypeScript typing. Use Tailwind CSS for styling.',
+    requirements: [
+      { text: 'Create a Button component with primary, secondary, and danger variants', points: 25 },
+      { text: 'Support at least 3 sizes (sm, md, lg)', points: 15 },
+      { text: 'Add loading state and disabled state', points: 10 },
+      { text: 'Write TypeScript props interface with proper JSDoc', points: 10 },
+    ],
+    dueDate: '2026-08-20',
+    totalPoints: 60,
+    language: 'javascript',
+    starterCode: `interface ButtonProps {\n  variant: 'primary' | 'secondary' | 'danger';\n  size: 'sm' | 'md' | 'lg';\n  loading?: boolean;\n  disabled?: boolean;\n  children: React.ReactNode;\n  onClick?: () => void;\n}\n\nexport function Button(props: ButtonProps) {\n  // Implement the Button component\n}`,
+  },
+  {
+    id: 'assign_003',
+    courseId: '3',
+    title: 'Data Visualization Dashboard',
+    description: 'Create an HTML page with embedded CSS and JavaScript that displays a data visualization using canvas or SVG. The dashboard should be responsive and visually appealing.',
+    requirements: [
+      { text: 'Build a bar chart using HTML Canvas or SVG', points: 25 },
+      { text: 'Include interactive tooltips on hover', points: 15 },
+      { text: 'Add responsive design for mobile and desktop', points: 10 },
+      { text: 'Use a clean, modern color scheme', points: 10 },
+    ],
+    dueDate: '2026-08-10',
+    totalPoints: 60,
+    language: 'html',
+    starterCode: `<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>Data Dashboard</title>\n  <style>\n    /* Add your styles here */\n  </style>\n</head>\n<body>\n  <div id="chart-container"></div>\n  <script>\n    // Build your visualization here\n  </script>\n</body>\n</html>`,
+  },
+];
+
+export const assignmentSubmissions: AssignmentSubmission[] = [
+  {
+    id: 'sub_001',
+    assignmentId: 'assign_001',
+    studentId: 'u1',
+    code: `def factorial(n: int) -> int:\n    """Calculate the factorial of n recursively."""\n    if n <= 1:\n        return 1\n    return n * factorial(n - 1)\n\ndef is_prime(n: int) -> bool:\n    """Check if a number is prime."""\n    if n < 2:\n        return False\n    for i in range(2, int(n**0.5) + 1):\n        if n % i == 0:\n            return False\n    return True\n\ndef flatten(nested: list) -> list:\n    """Flatten a deeply nested list."""\n    result = []\n    for item in nested:\n        if isinstance(item, list):\n            result.extend(flatten(item))\n        else:\n            result.append(item)\n    return result`,
+    submittedAt: '2026-07-25T14:30:00Z',
+    status: 'graded',
+    score: 52,
+    feedback: 'Strong implementation overall. The factorial and prime functions are correct and well-documented. The flatten function handles deep nesting well. Consider adding input validation and edge case handling for production code.',
+    gradedAt: '2026-07-27T10:00:00Z',
+  },
+  {
+    id: 'sub_002',
+    assignmentId: 'assign_003',
+    studentId: 'u1',
+    code: `<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n  <title>Data Dashboard</title>\n  <style>\n    body { font-family: sans-serif; margin: 20px; }\n    canvas { max-width: 100%; }\n  </style>\n</head>\n<body>\n  <h1>Sales Dashboard</h1>\n  <canvas id="chart" width="800" height="400"></canvas>\n  <script>\n    const canvas = document.getElementById('chart');\n    const ctx = canvas.getContext('2d');\n    // Chart implementation\n  </script>\n</body>\n</html>`,
+    submittedAt: '2026-07-30T09:15:00Z',
+    status: 'submitted',
+  },
+  {
+    id: 'sub_003',
+    assignmentId: 'assign_002',
+    studentId: 'u2',
+    code: `interface ButtonProps {\n  variant: 'primary' | 'secondary' | 'danger';\n  size: 'sm' | 'md' | 'lg';\n  loading?: boolean;\n  disabled?: boolean;\n  children: React.ReactNode;\n  onClick?: () => void;\n}\n\nexport function Button({ variant, size, loading, disabled, children, onClick }: ButtonProps) {\n  return (\n    <button\n      className={variant}\n      disabled={disabled || loading}\n      onClick={onClick}\n    >\n      {loading ? 'Loading...' : children}\n    </button>\n  );\n}`,
+    submittedAt: '2026-07-28T16:45:00Z',
+    status: 'returned',
+    score: 38,
+    feedback: 'Good start but needs more work. The component lacks size variants and the CSS classes are not implemented. Please revise and resubmit with proper Tailwind classes.',
+    gradedAt: '2026-07-29T11:00:00Z',
   },
 ];

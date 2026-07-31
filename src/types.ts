@@ -339,3 +339,29 @@ export interface Notification {
   read: boolean;
   actionUrl?: string;
 }
+
+export type AssignmentStatus = 'pending' | 'submitted' | 'graded' | 'returned';
+
+export interface Assignment {
+  id: string;
+  courseId: string;
+  title: string;
+  description: string;
+  requirements: { text: string; points: number }[];
+  dueDate: string;
+  totalPoints: number;
+  language: 'python' | 'html' | 'javascript';
+  starterCode?: string;
+}
+
+export interface AssignmentSubmission {
+  id: string;
+  assignmentId: string;
+  studentId: string;
+  code: string;
+  submittedAt: string;
+  status: AssignmentStatus;
+  score?: number;
+  feedback?: string;
+  gradedAt?: string;
+}
