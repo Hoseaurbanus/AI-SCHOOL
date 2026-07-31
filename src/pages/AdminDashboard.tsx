@@ -1,28 +1,7 @@
-import { Users, BookOpen, TrendingUp, DollarSign, Award, Brain, ArrowRight, ArrowUpRight } from 'lucide-react'
+import { Users, BookOpen, TrendingUp, DollarSign, Brain, ArrowRight, ArrowUpRight } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import { adminStats, recentTransactions } from '../data/mockData'
-
-function StatCard({ icon: Icon, label, value, sub, color, trend }: {
-  icon: React.ElementType; label: string; value: string; sub?: string; color: string; trend?: string
-}) {
-  return (
-    <div className="p-5 rounded-2xl" style={{ background: '#0D1421', border: '1px solid rgba(239,68,68,0.08)' }}>
-      <div className="flex items-start justify-between mb-3">
-        <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `${color}15` }}>
-          <Icon size={20} style={{ color }} />
-        </div>
-        {trend && (
-          <span className="flex items-center gap-1 text-xs font-semibold" style={{ color: '#10B981' }}>
-            <ArrowUpRight size={12} /> {trend}
-          </span>
-        )}
-      </div>
-      <div className="text-2xl font-bold font-display" style={{ color: '#F1F5F9' }}>{value}</div>
-      <div className="text-sm mt-0.5" style={{ color: '#64748B' }}>{label}</div>
-      {sub && <div className="text-xs mt-1" style={{ color: '#475569' }}>{sub}</div>}
-    </div>
-  )
-}
+import { useAdminStats, useAdminTransactions } from '../hooks/useAdmin'
+import StatsCard from '../components/admin/StatsCard'
 
 function MiniBarChart({ data, color }: { data: number[]; color: string }) {
   const max = Math.max(...data)
@@ -41,6 +20,17 @@ function MiniBarChart({ data, color }: { data: number[]; color: string }) {
 
 export default function AdminDashboard() {
   const navigate = useNavigate()
+  const { data: stats, isLoading: statsLoading } = useAdminStats()
+  const { data: transactions, isLoading: transactionsLoading } = useAdminTransactions()
+
+  if (statsLoading || transactionsLoading) {
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 flex items-center justify-center min-h-[400px]">
+        <div className="text-sm" style={{ color: '#64748B' }}>Loading dashboard...</div>
+      </div>
+    )
+  }
+
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-6">
       {/* Welcome */}
@@ -53,10 +43,10 @@ export default function AdminDashboard() {
 
       {/* Stats grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard icon={Users} label="Total Students" value={adminStats.totalStudents.toLocaleString()} sub="Active learners" color="#3B82F6" trend="+12%" />
-        <StatCard icon={DollarSign} label="Total Revenue" value={`₦${(adminStats.totalRevenue / 1000000).toFixed(1)}M`} sub="All time" color="#10B981" trend="+23%" />
-        <StatCard icon={BookOpen} label="Total Courses" value={String(adminStats.totalCourses)} sub="4 pending review" color="#8B5CF6" />
-        <StatCard icon={TrendingUp} label="Completion Rate" value={`${adminStats.completionRate}%`} sub="Platform average" color="#F59E0B" trend="+5%" />
+        <StatsCard icon={Users} title="Total Students" value={stats?.totalStudents.toLocaleString() ?? '0'} trend="+12%" color="#3B82F6" />
+        <StatsCard icon={DollarSign} title="Total Revenue" value={`₦${((stats?.totalRevenue ?? 0) / 1000000).toFixed(1)}M`} trend="+23%" color="#10B981" />
+        <StatsCard icon={BookOpen} title="Total Courses" value={stats?.totalCourses ?? 0} color="#8B5CF6" />
+        <StatsCard icon={TrendingUp} title="Completion Rate" value={`${stats?.completionRate ?? 0}%`} trend="+5%" color="#F59E0B" />
       </div>
 
       <div className="grid lg:grid-cols-3 gap-5">
@@ -95,10 +85,10 @@ export default function AdminDashboard() {
             <h3 className="font-semibold font-display mb-3" style={{ color: '#F1F5F9' }}>Platform Health</h3>
             <div className="space-y-3">
               {[
-                { label: 'Active Users (24h)', v: '3,421', bar: 68, color: '#3B82F6' },
-                { label: 'AI Tutor Queries', v: '12,847', bar: 85, color: '#8B5CF6' },
-                { label: 'Avg Rating', v: '4.8/5.0', bar: 96, color: '#F59E0B' },
-                { label: 'Server Uptime', v: '99.9%', bar: 100, color: '#10B981' },
+                { label: 'Active Users (24h)', v: stats?.activeUsers.toLocaleString() ?? '0', bar: 68, color: '#3B82F6' },
+                { label: 'AI Tutor Queries', v: stats?.aiTutorQueries.toLocaleString() ?? '0', bar: 85, color: '#8B5CF6' },
+                { label: 'Avg Rating', v: `${stats?.avgRating ?? 0}/5.0`, bar: 96, color: '#F59E0B' },
+                { label: 'Server Uptime', v: `${stats?.serverUptime ?? 0}%`, bar: 100, color: '#10B981' },
               ].map(({ label, v, bar, color }) => (
                 <div key={label}>
                   <div className="flex justify-between text-xs mb-1">
@@ -158,7 +148,7 @@ export default function AdminDashboard() {
               </tr>
             </thead>
             <tbody>
-              {recentTransactions.map(tx => (
+              {transactions?.map(tx => (
                 <tr key={tx.id} className="border-b transition-colors hover:bg-white/2" style={{ borderColor: 'rgba(239,68,68,0.04)' }}>
                   <td className="px-5 py-3.5 text-xs font-mono" style={{ color: '#3B82F6' }}>{tx.id}</td>
                   <td className="px-5 py-3.5 text-sm" style={{ color: '#F1F5F9' }}>{tx.studentName}</td>
