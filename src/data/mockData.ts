@@ -1,4 +1,4 @@
-import type { Course, CourseModule, CourseReview, Enrollment } from '../types';
+import type { Course, CourseModule, CourseReview, Enrollment, ChatMessage, AIInsight, StudentStats, LearningStreak } from '../types';
 
 export const courses: Course[] = [
   {
@@ -428,5 +428,82 @@ export const enrolledCourses: Enrollment[] = [
     lastAccessedAt: '2026-07-20',
     currentModule: 0,
     currentLesson: 0,
+  },
+];
+
+export const studentStats: StudentStats = {
+  totalCourses: 4,
+  activeCourses: 2,
+  completedCourses: 1,
+  totalHours: 87,
+  currentStreak: 12,
+  longestStreak: 18,
+  lessonsCompleted: 45,
+  totalLessons: 120,
+  avgScore: 82,
+  certificates: 1,
+};
+
+export const learningStreak: LearningStreak = {
+  current: 12,
+  longest: 18,
+  lastActive: '2026-07-30',
+  weeklyActivity: [true, true, true, true, true, true, false],
+};
+
+export const aiInsights: AIInsight[] = [
+  {
+    id: 'ins1',
+    type: 'recommendation',
+    title: 'Continue Python Course',
+    description: 'You\'re 68% through Python for AI. Complete Module 3 to unlock the next project.',
+    action: 'Continue Learning',
+    actionPath: '/courses/1/learn',
+    icon: 'BookOpen',
+  },
+  {
+    id: 'ins2',
+    type: 'achievement',
+    title: '12-Day Streak!',
+    description: 'Amazing consistency! You\'ve been learning for 12 days straight.',
+    icon: 'Flame',
+  },
+  {
+    id: 'ins3',
+    type: 'tip',
+    title: 'Practice Makes Perfect',
+    description: 'Try the coding lab to practice what you learned in today\'s lesson.',
+    action: 'Open Coding Lab',
+    actionPath: '/coding-lab',
+    icon: 'Code2',
+  },
+];
+
+export const chatHistory: ChatMessage[] = [
+  {
+    id: 'msg1',
+    role: 'user',
+    content: 'Can you explain how list comprehensions work in Python?',
+    timestamp: '2026-07-30T10:24:00Z',
+    courseId: '1',
+  },
+  {
+    id: 'msg2',
+    role: 'ai',
+    content: 'List comprehensions are a concise way to create lists in Python. They follow the syntax: [expression for item in iterable if condition]. Let me show you some examples...',
+    code: `# Basic list comprehension
+squares = [x**2 for x in range(10)]
+print(squares)  # [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]
+
+# With condition
+evens = [x for x in range(20) if x % 2 == 0]
+print(evens)  # [0, 2, 4, 6, 8, 10, 12, 14, 16, 18]
+
+# With function
+words = ['hello', 'world', 'python']
+upper = [w.upper() for w in words]
+print(upper)  # ['HELLO', 'WORLD', 'PYTHON']`,
+    timestamp: '2026-07-30T10:24:30Z',
+    courseId: '1',
   },
 ];
