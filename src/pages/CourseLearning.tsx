@@ -103,9 +103,8 @@ export default function CourseLearning() {
           <div className="p-4">
             <CurriculumList
               modules={curriculum}
-              currentModuleIndex={moduleIndex}
-              currentLessonIndex={lessonIndex}
-              completedLessons={completedLessons}
+              currentModule={moduleIndex}
+              currentLesson={lessonIndex}
               onLessonClick={handleLessonClick}
             />
           </div>
