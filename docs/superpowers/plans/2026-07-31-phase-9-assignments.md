@@ -1,0 +1,59 @@
+# Phase 9: Assignments — Implementation Plan
+
+## Task Dependency Graph
+
+| Task | Depends On | Reason |
+|------|------------|--------|
+| Task 1 | None | Types and mock data are foundational |
+| Task 2 | Task 1 | Components need types and data |
+| Task 3 | Task 1 | Components need types and data |
+| Task 4 | Task 1 | Components need types and data |
+| Task 5 | Tasks 2, 3, 4 | Page uses all three components |
+| Task 6 | Tasks 1-5 | Final verification needs everything complete |
+
+## Parallel Execution Graph
+
+Wave 1 (Start immediately):
+└── Task 1: Extend Types and Mock Data (no dependencies)
+
+Wave 2 (After Wave 1 completes):
+├── Task 2: Create AssignmentCard Component (depends: Task 1)
+├── Task 3: Create SubmissionForm Component (depends: Task 1)
+└── Task 4: Create FeedbackPanel Component (depends: Task 1)
+
+Wave 3 (After Wave 2 completes):
+└── Task 5: Rewrite Assignment Page (depends: Tasks 2, 3, 4)
+
+Wave 4 (After Wave 3 completes):
+└── Task 6: Final Verification (depends: Tasks 1-5)
+
+Critical Path: Task 1 → Task 2 → Task 5 → Task 6
+
+## Agent Dispatch Summary
+
+- **Wave 1:** 1 agent → Task 1
+- **Wave 2:** 3 agents → Tasks 2, 3, 4
+- **Wave 3:** 1 agent → Task 5
+- **Wave 4:** 1 agent → Task 6
+
+Total: 6 agent dispatches across 4 waves
+
+## Task Details
+
+### Task 1: Extend Types and Mock Data
+**Description:** Add AssignmentStatus, Assignment, AssignmentSubmission types to src/types.ts. Add assignments (3) and assignmentSubmissions (2-3) mock data arrays to src/data/mockData.ts.
+
+### Task 2: Create AssignmentCard Component
+**Description:** Create src/components/assignment/AssignmentCard.tsx — compact card showing title, course, due date, status badge, points. Uses useNavigate for navigation.
+
+### Task 3: Create SubmissionForm Component
+**Description:** Create src/components/assignment/SubmissionForm.tsx — code textarea, file upload drop zone, submit button. Accepts assignment and onSubmit callback.
+
+### Task 4: Create FeedbackPanel Component
+**Description:** Create src/components/assignment/FeedbackPanel.tsx — displays score, feedback text, requirement breakdown, return to revise button.
+
+### Task 5: Rewrite Assignment Page
+**Description:** Rewrite src/pages/Assignment.tsx with two modes: list mode (assignment cards with filters) and detail mode (?id= query param showing description, submission form, feedback).
+
+### Task 6: Final Verification
+**Description:** Run npx tsc --noEmit and npm run build. Verify all files exist. No commits.
