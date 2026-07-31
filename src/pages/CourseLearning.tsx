@@ -1,13 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, BookOpen, CheckCircle2, ChevronLeft, ChevronRight, FileText, MessageSquare, Wrench } from 'lucide-react';
+import { ArrowLeft, BookOpen, CheckCircle2, ChevronLeft, ChevronRight, FileText, Wrench } from 'lucide-react';
 import { courses, curriculum, lessonContents, resources } from '../data/mockData';
 import { useLessonProgress } from '../hooks/useLessonProgress';
 import CurriculumList from '../components/course/CurriculumList';
 import LessonContent from '../components/learning/LessonContent';
 import NotesPanel from '../components/learning/NotesPanel';
 import ResourcesList from '../components/learning/ResourcesList';
-import LoadingSpinner from '../components/ui/LoadingSpinner';
 
 type Tab = 'lesson' | 'notes' | 'resources';
 
@@ -24,9 +23,8 @@ export default function CourseLearning() {
   const currentLesson = currentModule.lessons[lessonIndex] || currentModule.lessons[0];
   const totalLessons = curriculum.reduce((sum, m) => sum + m.lessons.length, 0);
 
-  const { isCompleted, toggleLesson, progress } = useLessonProgress(courseId, totalLessons);
+  const { isCompleted, toggleLesson, progress, completedLessons } = useLessonProgress(courseId, totalLessons);
   const [activeTab, setActiveTab] = useState<Tab>('lesson');
-  const [showNotes, setShowNotes] = useState(false);
 
   const lessonContent = lessonContents[currentLesson.id] || [];
   const lessonResources = resources[currentLesson.id] || [];
@@ -107,7 +105,7 @@ export default function CourseLearning() {
               modules={curriculum}
               currentModuleIndex={moduleIndex}
               currentLessonIndex={lessonIndex}
-              completedLessons={[]}
+              completedLessons={completedLessons}
               onLessonClick={handleLessonClick}
             />
           </div>
