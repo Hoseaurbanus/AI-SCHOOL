@@ -161,3 +161,43 @@ export interface NavProps {
   navigate: (page: Page) => void;
   currentPage: Page;
 }
+
+export interface ChatMessage {
+  id: string;
+  role: 'user' | 'ai';
+  content: string;
+  code?: string;
+  timestamp: string;
+  courseId?: string;
+  lessonId?: string;
+}
+
+export interface AIInsight {
+  id: string;
+  type: 'recommendation' | 'warning' | 'achievement' | 'tip';
+  title: string;
+  description: string;
+  action?: string;
+  actionPath?: string;
+  icon: string;
+}
+
+export interface StudentStats {
+  totalCourses: number;
+  activeCourses: number;
+  completedCourses: number;
+  totalHours: number;
+  currentStreak: number;
+  longestStreak: number;
+  lessonsCompleted: number;
+  totalLessons: number;
+  avgScore: number;
+  certificates: number;
+}
+
+export interface LearningStreak {
+  current: number;
+  longest: number;
+  lastActive: string;
+  weeklyActivity: boolean[];
+}
