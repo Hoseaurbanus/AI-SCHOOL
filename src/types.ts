@@ -279,3 +279,40 @@ export interface KnowledgeBase {
   documents: number;
   lastUpdated: string;
 }
+
+export type QuestionType = 'multiple-choice' | 'multiple-select' | 'true-false' | 'code-completion';
+
+export interface Question {
+  id: string;
+  type: QuestionType;
+  text: string;
+  code?: string;
+  options: { id: string; text: string }[];
+  correctAnswers: string[];
+  explanation: string;
+  points: number;
+}
+
+export interface Assessment {
+  id: string;
+  title: string;
+  description: string;
+  courseId: string;
+  moduleId?: string;
+  timeLimit: number;
+  passingScore: number;
+  questions: Question[];
+  attempts: number;
+  maxAttempts: number;
+}
+
+export interface AssessmentResult {
+  id: string;
+  assessmentId: string;
+  userId: string;
+  answers: Record<string, string[]>;
+  score: number;
+  passed: boolean;
+  timeTaken: number;
+  completedAt: string;
+}
