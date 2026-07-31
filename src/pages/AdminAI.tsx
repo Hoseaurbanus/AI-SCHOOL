@@ -1,19 +1,36 @@
 import { useState } from 'react'
 import { Brain, Plus, Edit, Trash2, Upload, Save } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
-
-const knowledgeBases = [
-  { id: '1', name: 'Python for AI — Core Materials', course: 'Python for AI', docs: 24, updated: '2025-07-28', status: 'active' },
-  { id: '2', name: 'Machine Learning Curriculum', course: 'Machine Learning Fundamentals', docs: 38, updated: '2025-07-25', status: 'active' },
-  { id: '3', name: 'Data Science Reference Pack', course: 'Data Science with Python', docs: 19, updated: '2025-07-20', status: 'draft' },
-  { id: '4', name: 'React & TypeScript Best Practices', course: 'React & TypeScript Mastery', docs: 31, updated: '2025-07-15', status: 'active' },
-]
+import { useKnowledgeBases, useCreateKnowledgeBase, useDeleteKnowledgeBase } from '../hooks/useAdmin'
 
 export default function AdminAI() {
-  const navigate = useNavigate()
+  const { data: knowledgeBases, isLoading } = useKnowledgeBases()
+  const createMutation = useCreateKnowledgeBase()
+  const deleteMutation = useDeleteKnowledgeBase()
+  const [showNewForm, setShowNewForm] = useState(false)
+  const [newName, setNewName] = useState('')
+  const [newCourseId, setNewCourseId] = useState('')
   const [instructions, setInstructions] = useState(
     `You are a helpful and encouraging AI tutor for Smugflex AI Academy. Your role is to:\n\n1. Explain concepts clearly using analogies and real-world examples\n2. Ask questions back to verify student understanding\n3. Provide hints rather than complete answers for exercises\n4. Celebrate progress and maintain a positive, motivating tone\n5. Always relate new concepts to what the student already knows\n\nTone: Professional but friendly. Encouraging without being patronizing.\nLanguage: English. Use simple vocabulary first, then introduce technical terms.`
   )
+
+  const handleCreate = () => {
+    if (!newName.trim() || !newCourseId.trim()) return
+    createMutation.mutate({ name: newName, courseId: newCourseId }, {
+      onSuccess: () => {
+        setNewName('')
+        setNewCourseId('')
+        setShowNewForm(false)
+      }
+    })
+  }
+
+  if (isLoading) {
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 flex items-center justify-center min-h-[400px]">
+        <div className="text-sm" style={{ color: '#64748B' }}>Loading AI knowledge...</div>
+      </div>
+    )
+  }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-6">
@@ -23,35 +40,82 @@ export default function AdminAI() {
       </div>
 
       <div className="grid lg:grid-cols-2 gap-5">
-        {/* Knowledge Bases */}
         <div>
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-semibold font-display" style={{ color: '#F1F5F9' }}>Course Knowledge Bases</h2>
-            <button className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold" style={{ background: 'rgba(239,68,68,0.1)', color: '#EF4444', border: '1px solid rgba(239,68,68,0.2)' }}>
+            <button
+              onClick={() => setShowNewForm(!showNewForm)}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold"
+              style={{ background: 'rgba(239,68,68,0.1)', color: '#EF4444', border: '1px solid rgba(239,68,68,0.2)' }}
+            >
               <Plus size={13} /> New
             </button>
           </div>
+
+          {showNewForm && (
+            <div className="mb-4 p-4 rounded-xl border" style={{ background: '#0D1421', borderColor: 'rgba(239,68,68,0.15)' }}>
+              <div className="space-y-3">
+                <input
+                  type="text"
+                  placeholder="Knowledge base name"
+                  value={newName}
+                  onChange={e => setNewName(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg text-sm outline-none"
+                  style={{ background: 'rgba(59,130,246,0.05)', color: '#F1F5F9', border: '1px solid rgba(239,68,68,0.1)' }}
+                />
+                <input
+                  type="text"
+                  placeholder="Course ID"
+                  value={newCourseId}
+                  onChange={e => setNewCourseId(e.target.value)}
+                  className="w-full px-3 py-2 rounded-lg text-sm outline-none"
+                  style={{ background: 'rgba(59,130,246,0.05)', color: '#F1F5F9', border: '1px solid rgba(239,68,68,0.1)' }}
+                />
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleCreate}
+                    disabled={createMutation.isPending}
+                    className="px-4 py-2 rounded-lg text-xs font-semibold"
+                    style={{ background: 'rgba(16,185,129,0.1)', color: '#10B981' }}
+                  >
+                    {createMutation.isPending ? 'Creating...' : 'Create'}
+                  </button>
+                  <button
+                    onClick={() => setShowNewForm(false)}
+                    className="px-4 py-2 rounded-lg text-xs"
+                    style={{ color: '#64748B' }}
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="space-y-3">
-            {knowledgeBases.map(kb => (
+            {knowledgeBases?.map(kb => (
               <div key={kb.id} className="p-4 rounded-xl border" style={{ background: '#0D1421', borderColor: 'rgba(239,68,68,0.08)' }}>
                 <div className="flex items-start justify-between gap-3 mb-2">
                   <div>
                     <p className="text-sm font-semibold" style={{ color: '#F1F5F9' }}>{kb.name}</p>
-                    <p className="text-xs" style={{ color: '#64748B' }}>{kb.course}</p>
+                    <p className="text-xs" style={{ color: '#64748B' }}>Course {kb.courseId}</p>
                   </div>
-                  <span className="text-xs px-2 py-1 rounded-full flex-shrink-0" style={{ background: kb.status === 'active' ? 'rgba(16,185,129,0.1)' : 'rgba(245,158,11,0.1)', color: kb.status === 'active' ? '#10B981' : '#F59E0B' }}>
-                    {kb.status}
-                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3 text-xs" style={{ color: '#475569' }}>
-                    <span>{kb.docs} documents</span>
-                    <span>Updated {kb.updated}</span>
+                    <span>{kb.documents} documents</span>
+                    <span>Updated {kb.lastUpdated}</span>
                   </div>
                   <div className="flex gap-2">
                     <button style={{ color: '#F59E0B' }}><Edit size={13} /></button>
                     <button style={{ color: '#3B82F6' }}><Upload size={13} /></button>
-                    <button style={{ color: '#EF4444' }}><Trash2 size={13} /></button>
+                    <button
+                      onClick={() => deleteMutation.mutate(kb.id)}
+                      disabled={deleteMutation.isPending}
+                      style={{ color: '#EF4444' }}
+                    >
+                      <Trash2 size={13} />
+                    </button>
                   </div>
                 </div>
               </div>
@@ -59,7 +123,6 @@ export default function AdminAI() {
           </div>
         </div>
 
-        {/* AI Instructions */}
         <div>
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-semibold font-display" style={{ color: '#F1F5F9' }}>AI Tutor Instructions</h2>

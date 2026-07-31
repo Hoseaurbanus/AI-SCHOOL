@@ -1,18 +1,37 @@
-import { useState } from 'react'
-import { Search, Download, DollarSign } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
-import { recentTransactions } from '../data/mockData'
+import { useState, useMemo } from 'react'
+import { Search, Download, DollarSign, TrendingUp, Clock, AlertTriangle } from 'lucide-react'
+import { useAdminTransactions } from '../hooks/useAdmin'
+import StatsCard from '../components/admin/StatsCard'
 
 export default function AdminPayments() {
-  const navigate = useNavigate()
+  const { data: transactions, isLoading } = useAdminTransactions()
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('all')
 
-  const filtered = recentTransactions.filter(tx => {
-    const matchSearch = tx.studentName.toLowerCase().includes(search.toLowerCase()) || tx.id.toLowerCase().includes(search.toLowerCase())
-    const matchFilter = filter === 'all' || tx.status === filter
-    return matchSearch && matchFilter
-  })
+  const stats = useMemo(() => {
+    if (!transactions) return { total: 0, month: 0, pending: 0 }
+    const total = transactions.reduce((sum, tx) => sum + tx.amount, 0)
+    const month = transactions.filter(tx => tx.date.startsWith('2025-07')).reduce((sum, tx) => sum + tx.amount, 0)
+    const pending = transactions.filter(tx => tx.status === 'pending').reduce((sum, tx) => sum + tx.amount, 0)
+    return { total, month, pending }
+  }, [transactions])
+
+  const filtered = useMemo(() => {
+    if (!transactions) return []
+    return transactions.filter(tx => {
+      const matchSearch = tx.studentName.toLowerCase().includes(search.toLowerCase()) || tx.id.toLowerCase().includes(search.toLowerCase())
+      const matchFilter = filter === 'all' || tx.status === filter
+      return matchSearch && matchFilter
+    })
+  }, [transactions, search, filter])
+
+  if (isLoading) {
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 flex items-center justify-center min-h-[400px]">
+        <div className="text-sm" style={{ color: '#64748B' }}>Loading payments...</div>
+      </div>
+    )
+  }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
@@ -26,22 +45,12 @@ export default function AdminPayments() {
         </button>
       </div>
 
-      {/* Summary */}
       <div className="grid grid-cols-3 gap-4 mb-6">
-        {[
-          { label: 'Total Revenue', value: '₦4.57M', color: '#10B981' },
-          { label: 'This Month', value: '₦2.3M', color: '#3B82F6' },
-          { label: 'Pending', value: '₦85K', color: '#F59E0B' },
-        ].map(({ label, value, color }) => (
-          <div key={label} className="p-4 rounded-xl text-center" style={{ background: '#0D1421', border: '1px solid rgba(239,68,68,0.08)' }}>
-            <DollarSign size={18} className="mx-auto mb-2" style={{ color }} />
-            <div className="font-bold font-display" style={{ color }}>{value}</div>
-            <div className="text-xs mt-0.5" style={{ color: '#64748B' }}>{label}</div>
-          </div>
-        ))}
+        <StatsCard icon={DollarSign} title="Total Revenue" value={`₦${(stats.total / 1000).toFixed(0)}K`} trend="+23%" color="#10B981" />
+        <StatsCard icon={TrendingUp} title="This Month" value={`₦${(stats.month / 1000).toFixed(0)}K`} color="#3B82F6" />
+        <StatsCard icon={Clock} title="Pending" value={`₦${(stats.pending / 1000).toFixed(0)}K`} color="#F59E0B" />
       </div>
 
-      {/* Filters */}
       <div className="flex flex-wrap gap-3 mb-5">
         <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl" style={{ background: '#0D1421', border: '1px solid rgba(239,68,68,0.1)', width: '240px' }}>
           <Search size={15} style={{ color: '#475569' }} />

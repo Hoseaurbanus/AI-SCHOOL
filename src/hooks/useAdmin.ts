@@ -63,3 +63,33 @@ export function useDeleteUser() {
     },
   });
 }
+
+export function useVerifyCertificate() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => Promise.resolve({ verified: true }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'certificates'] });
+    },
+  });
+}
+
+export function useCreateKnowledgeBase() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (kb: { name: string; courseId: string }) => Promise.resolve({ id: `KB-${Date.now()}`, ...kb, documents: 0, lastUpdated: new Date().toISOString().slice(0, 10) }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'knowledgeBases'] });
+    },
+  });
+}
+
+export function useDeleteKnowledgeBase() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => Promise.resolve(),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'knowledgeBases'] });
+    },
+  });
+}

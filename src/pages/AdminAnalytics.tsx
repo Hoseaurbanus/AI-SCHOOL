@@ -1,4 +1,6 @@
-import { useNavigate } from 'react-router-dom'
+import { useAdminStats } from '../hooks/useAdmin'
+import StatsCard from '../components/admin/StatsCard'
+import { DollarSign, Users, BookOpen, TrendingUp } from 'lucide-react'
 
 function BarChart({ data, labels, color, height = 120 }: { data: number[]; labels: string[]; color: string; height?: number }) {
   const max = Math.max(...data)
@@ -47,7 +49,16 @@ function DonutChart({ value, total, color }: { value: number; total: number; col
 }
 
 export default function AdminAnalytics() {
-  const navigate = useNavigate()
+  const { data: stats, isLoading } = useAdminStats()
+
+  if (isLoading) {
+    return (
+      <div className="p-4 sm:p-6 lg:p-8 flex items-center justify-center min-h-[400px]">
+        <div className="text-sm" style={{ color: '#64748B' }}>Loading analytics...</div>
+      </div>
+    )
+  }
+
   return (
     <div className="p-4 sm:p-6 lg:p-8 space-y-6">
       <div>
@@ -55,24 +66,14 @@ export default function AdminAnalytics() {
         <p className="text-sm mt-1" style={{ color: '#64748B' }}>Platform performance overview</p>
       </div>
 
-      {/* Top stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {[
-          { label: 'Total Revenue', value: '₦4.57M', sub: '+23% vs last month', color: '#10B981' },
-          { label: 'New Enrollments', value: '847', sub: '+18% this month', color: '#3B82F6' },
-          { label: 'Active Students', value: '3,421', sub: 'In last 30 days', color: '#8B5CF6' },
-          { label: 'Completions', value: '234', sub: '78% completion rate', color: '#F59E0B' },
-        ].map(({ label, value, sub, color }) => (
-          <div key={label} className="p-5 rounded-2xl" style={{ background: '#0D1421', border: '1px solid rgba(239,68,68,0.08)' }}>
-            <div className="text-2xl font-bold font-display mb-1" style={{ color }}>{value}</div>
-            <div className="text-sm font-medium mb-1" style={{ color: '#94A3B8' }}>{label}</div>
-            <div className="text-xs" style={{ color: '#10B981' }}>{sub}</div>
-          </div>
-        ))}
+        <StatsCard icon={DollarSign} title="Total Revenue" value={`₦${((stats?.totalRevenue ?? 0) / 1000000).toFixed(1)}M`} trend="+23%" color="#10B981" />
+        <StatsCard icon={Users} title="Total Students" value={stats?.totalStudents?.toLocaleString() ?? '0'} trend="+18%" color="#3B82F6" />
+        <StatsCard icon={BookOpen} title="Total Courses" value={stats?.totalCourses ?? 0} color="#8B5CF6" />
+        <StatsCard icon={TrendingUp} title="Completion Rate" value={`${stats?.completionRate ?? 0}%`} trend="+5%" color="#F59E0B" />
       </div>
 
       <div className="grid lg:grid-cols-2 gap-5">
-        {/* Enrollment chart */}
         <div className="p-5 rounded-2xl" style={{ background: '#0D1421', border: '1px solid rgba(239,68,68,0.08)' }}>
           <h3 className="font-semibold font-display mb-4" style={{ color: '#F1F5F9' }}>Monthly Enrollments</h3>
           <BarChart
@@ -83,7 +84,6 @@ export default function AdminAnalytics() {
           />
         </div>
 
-        {/* Revenue chart */}
         <div className="p-5 rounded-2xl" style={{ background: '#0D1421', border: '1px solid rgba(239,68,68,0.08)' }}>
           <h3 className="font-semibold font-display mb-4" style={{ color: '#F1F5F9' }}>Revenue (₦K)</h3>
           <BarChart
@@ -96,7 +96,6 @@ export default function AdminAnalytics() {
       </div>
 
       <div className="grid lg:grid-cols-3 gap-5">
-        {/* Completion rates by course */}
         <div className="lg:col-span-2 p-5 rounded-2xl" style={{ background: '#0D1421', border: '1px solid rgba(239,68,68,0.08)' }}>
           <h3 className="font-semibold font-display mb-4" style={{ color: '#F1F5F9' }}>Course Performance</h3>
           <div className="space-y-3">
@@ -126,13 +125,12 @@ export default function AdminAnalytics() {
           </div>
         </div>
 
-        {/* Donut charts */}
         <div className="space-y-4">
           <div className="p-5 rounded-2xl" style={{ background: '#0D1421', border: '1px solid rgba(239,68,68,0.08)' }}>
             <h3 className="font-semibold font-display mb-3 text-sm" style={{ color: '#F1F5F9' }}>Completion Rate</h3>
             <div className="flex items-center gap-4">
-              <DonutChart value={78} total={100} color="#10B981" />
-              <div className="text-sm" style={{ color: '#64748B' }}>78% of students complete their courses</div>
+              <DonutChart value={stats?.completionRate ?? 78} total={100} color="#10B981" />
+              <div className="text-sm" style={{ color: '#64748B' }}>{stats?.completionRate ?? 78}% of students complete their courses</div>
             </div>
           </div>
           <div className="p-5 rounded-2xl" style={{ background: '#0D1421', border: '1px solid rgba(239,68,68,0.08)' }}>
