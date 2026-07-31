@@ -1,4 +1,4 @@
-import type { Course, CourseModule, CourseReview, Enrollment, ChatMessage, AIInsight, StudentStats, LearningStreak, LessonContent, Resource, CodeExercise } from '../types';
+import type { Course, CourseModule, CourseReview, Enrollment, ChatMessage, AIInsight, StudentStats, LearningStreak, LessonContent, Resource, CodeExercise, AdminStats, Transaction, Certificate, KnowledgeBase } from '../types';
 
 export const courses: Course[] = [
   {
@@ -259,23 +259,23 @@ export const faqs = [
   },
 ];
 
-export const adminStats = {
+export const adminStats: AdminStats = {
   totalStudents: 12847,
   totalRevenue: 4568200,
   totalCourses: 48,
   completionRate: 78,
   activeUsers: 3421,
-  newStudentsThisMonth: 847,
-  revenueGrowth: 23,
+  aiTutorQueries: 45678,
   avgRating: 4.8,
+  serverUptime: 99.9,
 };
 
-export const recentTransactions = [
-  { id: 'TXN-001', student: 'Emeka Okafor', course: 'Machine Learning Fundamentals', amount: 65000, status: 'success', date: '2025-07-29', method: 'Paystack' },
-  { id: 'TXN-002', student: 'Adaeze Williams', course: 'React & TypeScript Mastery', amount: 75000, status: 'success', date: '2025-07-29', method: 'Flutterwave' },
-  { id: 'TXN-003', student: 'Chukwuemeka Eze', course: 'Python for AI', amount: 49000, status: 'pending', date: '2025-07-28', method: 'Bank Transfer' },
-  { id: 'TXN-004', student: 'Yetunde Akinola', course: 'Data Science with Python', amount: 55000, status: 'success', date: '2025-07-28', method: 'Paystack' },
-  { id: 'TXN-005', student: 'Musa Ibrahim', course: 'Cybersecurity Essentials', amount: 45000, status: 'failed', date: '2025-07-27', method: 'Paystack' },
+export const recentTransactions: Transaction[] = [
+  { id: 'TXN-001', studentName: 'Emeka Okafor', courseName: 'Machine Learning Fundamentals', amount: 65000, status: 'success', date: '2025-07-29' },
+  { id: 'TXN-002', studentName: 'Adaeze Williams', courseName: 'React & TypeScript Mastery', amount: 75000, status: 'success', date: '2025-07-29' },
+  { id: 'TXN-003', studentName: 'Chukwuemeka Eze', courseName: 'Python for AI', amount: 49000, status: 'pending', date: '2025-07-28' },
+  { id: 'TXN-004', studentName: 'Yetunde Akinola', courseName: 'Data Science with Python', amount: 55000, status: 'success', date: '2025-07-28' },
+  { id: 'TXN-005', studentName: 'Musa Ibrahim', courseName: 'Cybersecurity Essentials', amount: 45000, status: 'failed', date: '2025-07-27' },
 ];
 
 export const users = [
@@ -618,4 +618,20 @@ print(upper)  # ['HELLO', 'WORLD', 'PYTHON']`,
     timestamp: '2026-07-30T10:24:30Z',
     courseId: '1',
   },
+];
+
+export const certificates: Certificate[] = [
+  { id: 'CERT-001', studentName: 'Emeka Okafor', courseName: 'Machine Learning Fundamentals', score: 92, date: '2026-06-20', status: 'issued' },
+  { id: 'CERT-002', studentName: 'Adaeze Williams', courseName: 'React & TypeScript Mastery', score: 88, date: '2026-07-15', status: 'issued' },
+  { id: 'CERT-003', studentName: 'Chukwuemeka Eze', courseName: 'Python for AI', score: 76, date: '2026-07-28', status: 'pending' },
+  { id: 'CERT-004', studentName: 'Yetunde Akinola', courseName: 'Data Science with Python', score: 95, date: '2026-07-10', status: 'issued' },
+  { id: 'CERT-005', studentName: 'Musa Ibrahim', courseName: 'Cybersecurity Essentials', score: 68, date: '2026-07-25', status: 'pending' },
+];
+
+export const knowledgeBases: KnowledgeBase[] = [
+  { id: 'KB-001', name: 'Python AI Tutor', courseId: '1', documents: 124, lastUpdated: '2026-07-29' },
+  { id: 'KB-002', name: 'ML Fundamentals', courseId: '2', documents: 98, lastUpdated: '2026-07-28' },
+  { id: 'KB-003', name: 'Data Science Guide', courseId: '3', documents: 87, lastUpdated: '2026-07-27' },
+  { id: 'KB-004', name: 'React & TypeScript', courseId: '4', documents: 112, lastUpdated: '2026-07-26' },
+  { id: 'KB-005', name: 'Node.js Backend', courseId: '5', documents: 76, lastUpdated: '2026-07-25' },
 ];

@@ -242,3 +242,40 @@ export interface ExecutionResult {
   error?: string;
   status: 'success' | 'error';
 }
+
+export interface AdminStats {
+  totalStudents: number;
+  totalRevenue: number;
+  totalCourses: number;
+  completionRate: number;
+  activeUsers: number;
+  aiTutorQueries: number;
+  avgRating: number;
+  serverUptime: number;
+}
+
+export interface Transaction {
+  id: string;
+  studentName: string;
+  courseName: string;
+  amount: number;
+  status: 'success' | 'pending' | 'failed';
+  date: string;
+}
+
+export interface Certificate {
+  id: string;
+  studentName: string;
+  courseName: string;
+  score: number;
+  date: string;
+  status: 'issued' | 'pending';
+}
+
+export interface KnowledgeBase {
+  id: string;
+  name: string;
+  courseId: string;
+  documents: number;
+  lastUpdated: string;
+}

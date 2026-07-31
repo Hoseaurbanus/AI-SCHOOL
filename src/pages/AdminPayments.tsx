@@ -9,7 +9,7 @@ export default function AdminPayments() {
   const [filter, setFilter] = useState('all')
 
   const filtered = recentTransactions.filter(tx => {
-    const matchSearch = tx.student.toLowerCase().includes(search.toLowerCase()) || tx.id.toLowerCase().includes(search.toLowerCase())
+    const matchSearch = tx.studentName.toLowerCase().includes(search.toLowerCase()) || tx.id.toLowerCase().includes(search.toLowerCase())
     const matchFilter = filter === 'all' || tx.status === filter
     return matchSearch && matchFilter
   })
@@ -61,7 +61,7 @@ export default function AdminPayments() {
           <table className="w-full">
             <thead>
               <tr className="border-b text-xs" style={{ borderColor: 'rgba(239,68,68,0.08)' }}>
-                {['Transaction ID', 'Student', 'Course', 'Amount', 'Method', 'Status', 'Date'].map(h => (
+                {['Transaction ID', 'Student', 'Course', 'Amount', 'Status', 'Date'].map(h => (
                   <th key={h} className="text-left px-5 py-3 font-semibold" style={{ color: '#475569' }}>{h}</th>
                 ))}
               </tr>
@@ -70,10 +70,9 @@ export default function AdminPayments() {
               {filtered.map(tx => (
                 <tr key={tx.id} className="border-b" style={{ borderColor: 'rgba(239,68,68,0.04)' }}>
                   <td className="px-5 py-3.5 text-xs font-mono" style={{ color: '#3B82F6' }}>{tx.id}</td>
-                  <td className="px-5 py-3.5 text-sm" style={{ color: '#F1F5F9' }}>{tx.student}</td>
-                  <td className="px-5 py-3.5 text-xs" style={{ color: '#94A3B8' }}>{tx.course}</td>
+                  <td className="px-5 py-3.5 text-sm" style={{ color: '#F1F5F9' }}>{tx.studentName}</td>
+                  <td className="px-5 py-3.5 text-xs" style={{ color: '#94A3B8' }}>{tx.courseName}</td>
                   <td className="px-5 py-3.5 text-sm font-semibold" style={{ color: '#10B981' }}>₦{tx.amount.toLocaleString()}</td>
-                  <td className="px-5 py-3.5 text-xs" style={{ color: '#64748B' }}>{tx.method}</td>
                   <td className="px-5 py-3.5">
                     <span className="text-xs px-2 py-1 rounded-full" style={{ background: tx.status === 'success' ? 'rgba(16,185,129,0.1)' : tx.status === 'pending' ? 'rgba(245,158,11,0.1)' : 'rgba(239,68,68,0.1)', color: tx.status === 'success' ? '#10B981' : tx.status === 'pending' ? '#F59E0B' : '#EF4444' }}>
                       {tx.status}

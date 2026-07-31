@@ -53,7 +53,7 @@ export default function AdminDashboard() {
 
       {/* Stats grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard icon={Users} label="Total Students" value={adminStats.totalStudents.toLocaleString()} sub={`+${adminStats.newStudentsThisMonth} this month`} color="#3B82F6" trend="+12%" />
+        <StatCard icon={Users} label="Total Students" value={adminStats.totalStudents.toLocaleString()} sub="Active learners" color="#3B82F6" trend="+12%" />
         <StatCard icon={DollarSign} label="Total Revenue" value={`₦${(adminStats.totalRevenue / 1000000).toFixed(1)}M`} sub="All time" color="#10B981" trend="+23%" />
         <StatCard icon={BookOpen} label="Total Courses" value={String(adminStats.totalCourses)} sub="4 pending review" color="#8B5CF6" />
         <StatCard icon={TrendingUp} label="Completion Rate" value={`${adminStats.completionRate}%`} sub="Platform average" color="#F59E0B" trend="+5%" />
@@ -152,7 +152,7 @@ export default function AdminDashboard() {
           <table className="w-full">
             <thead>
               <tr className="text-xs border-b" style={{ borderColor: 'rgba(239,68,68,0.06)' }}>
-                {['ID', 'Student', 'Course', 'Amount', 'Method', 'Status', 'Date'].map(h => (
+                {['ID', 'Student', 'Course', 'Amount', 'Status', 'Date'].map(h => (
                   <th key={h} className="text-left px-5 py-3 font-semibold" style={{ color: '#475569' }}>{h}</th>
                 ))}
               </tr>
@@ -161,10 +161,9 @@ export default function AdminDashboard() {
               {recentTransactions.map(tx => (
                 <tr key={tx.id} className="border-b transition-colors hover:bg-white/2" style={{ borderColor: 'rgba(239,68,68,0.04)' }}>
                   <td className="px-5 py-3.5 text-xs font-mono" style={{ color: '#3B82F6' }}>{tx.id}</td>
-                  <td className="px-5 py-3.5 text-sm" style={{ color: '#F1F5F9' }}>{tx.student}</td>
-                  <td className="px-5 py-3.5 text-xs" style={{ color: '#94A3B8' }}>{tx.course.slice(0, 20)}...</td>
+                  <td className="px-5 py-3.5 text-sm" style={{ color: '#F1F5F9' }}>{tx.studentName}</td>
+                  <td className="px-5 py-3.5 text-xs" style={{ color: '#94A3B8' }}>{tx.courseName.slice(0, 20)}...</td>
                   <td className="px-5 py-3.5 text-sm font-semibold" style={{ color: '#10B981' }}>₦{tx.amount.toLocaleString()}</td>
-                  <td className="px-5 py-3.5 text-xs" style={{ color: '#64748B' }}>{tx.method}</td>
                   <td className="px-5 py-3.5">
                     <span
                       className="text-xs px-2 py-1 rounded-full font-medium"
