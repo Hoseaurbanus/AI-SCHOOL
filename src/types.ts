@@ -201,3 +201,26 @@ export interface LearningStreak {
   lastActive: string;
   weeklyActivity: boolean[];
 }
+
+export interface LessonContent {
+  type: 'text' | 'code' | 'image' | 'heading';
+  content: string;
+  language?: string;
+  caption?: string;
+}
+
+export interface Resource {
+  id: string;
+  title: string;
+  type: 'pdf' | 'zip' | 'link';
+  url: string;
+  size?: string;
+}
+
+export interface Note {
+  id: string;
+  lessonId: string;
+  userId: string;
+  content: string;
+  updatedAt: string;
+}
