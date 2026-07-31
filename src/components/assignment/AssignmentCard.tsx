@@ -1,7 +1,7 @@
-import { Calendar, Clock, FileCode, CheckCircle2, RotateCcw, Send } from 'lucide-react';
+import { Calendar, Clock, FileCode, Send } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import type { Assignment } from '../../types';
-import { courses } from '../../data/mockData';
+import { courses, assignmentSubmissions } from '../../data/mockData';
 
 interface AssignmentCardProps {
   assignment: Assignment;
@@ -10,6 +10,21 @@ interface AssignmentCardProps {
 export default function AssignmentCard({ assignment }: AssignmentCardProps) {
   const navigate = useNavigate();
   const course = courses.find((c) => c.id === assignment.courseId);
+  const submission = assignmentSubmissions.find((s) => s.assignmentId === assignment.id);
+
+  const statusColors: Record<string, { bg: string; text: string }> = {
+    pending: { bg: 'rgba(107,114,128,0.1)', text: '#6B7280' },
+    submitted: { bg: 'rgba(59,130,246,0.1)', text: '#3B82F6' },
+    graded: { bg: 'rgba(34,197,94,0.1)', text: '#22C55E' },
+    returned: { bg: 'rgba(234,179,8,0.1)', text: '#EAB308' },
+  };
+
+  const statusLabels: Record<string, string> = {
+    pending: 'Pending',
+    submitted: 'Submitted',
+    graded: 'Graded',
+    returned: 'Returned',
+  };
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
@@ -42,16 +57,29 @@ export default function AssignmentCard({ assignment }: AssignmentCardProps) {
               {assignment.language.charAt(0).toUpperCase() + assignment.language.slice(1)}
             </span>
           </div>
-          <span
-            className="px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1"
-            style={{
-              background: 'rgba(34,197,94,0.1)',
-              color: '#22C55E',
-            }}
-          >
-            <FileCode size={12} />
-            {assignment.totalPoints} pts
-          </span>
+          <div className="flex items-center gap-2">
+            {submission && (
+              <span
+                className="px-2 py-1 rounded-full text-xs font-medium"
+                style={{
+                  background: statusColors[submission.status].bg,
+                  color: statusColors[submission.status].text,
+                }}
+              >
+                {statusLabels[submission.status]}
+              </span>
+            )}
+            <span
+              className="px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1"
+              style={{
+                background: 'rgba(34,197,94,0.1)',
+                color: '#22C55E',
+              }}
+            >
+              <FileCode size={12} />
+              {assignment.totalPoints} pts
+            </span>
+          </div>
         </div>
 
         <h3
