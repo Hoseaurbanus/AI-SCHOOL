@@ -1,4 +1,4 @@
-import type { Course, CourseModule, CourseReview, Enrollment, ChatMessage, AIInsight, StudentStats, LearningStreak } from '../types';
+import type { Course, CourseModule, CourseReview, Enrollment, ChatMessage, AIInsight, StudentStats, LearningStreak, LessonContent, Resource } from '../types';
 
 export const courses: Course[] = [
   {
@@ -349,6 +349,73 @@ export const curriculum: CourseModule[] = [
     ],
   },
 ];
+
+export const lessonContents: Record<string, LessonContent[]> = {
+  'les_001': [
+    { type: 'heading', content: 'What Are Loops?' },
+    { type: 'text', content: 'Loops allow you to execute a block of code repeatedly. Python has two main loop types: `for` loops and `while` loops.' },
+    { type: 'text', content: 'A `for` loop iterates over a sequence (like a list, string, or range). It\'s the most common loop type in Python.' },
+    { type: 'heading', content: 'Your First For Loop' },
+    { type: 'code', content: '# Loop through a list of fruits\nfruits = ["apple", "banana", "cherry"]\n\nfor fruit in fruits:\n    print(f"I like {fruit}")\n\n# Output:\n# I like apple\n# I like banana\n# I like cherry', language: 'python' },
+    { type: 'text', content: 'The `for` keyword picks each item from the sequence and assigns it to the variable `fruit`. The loop body executes once per item.' },
+    { type: 'heading', content: 'Using range()' },
+    { type: 'text', content: 'The `range()` function generates a sequence of numbers, perfect for looping a specific number of times.' },
+    { type: 'code', content: '# Loop 5 times\nfor i in range(5):\n    print(f"Iteration {i}")\n\n# Output:\n# Iteration 0\n# Iteration 1\n# Iteration 2\n# Iteration 3\n# Iteration 4', language: 'python' },
+    { type: 'heading', content: 'Practice Task' },
+    { type: 'text', content: 'Write a for loop that prints all even numbers from 1 to 20. Hint: use the `range()` function with a step parameter.' },
+  ],
+  'les_002': [
+    { type: 'heading', content: 'While Loops' },
+    { type: 'text', content: 'A `while` loop continues executing as long as its condition is `True`. Use it when you don\'t know how many iterations you need.' },
+    { type: 'code', content: 'count = 0\nwhile count < 5:\n    print(f"Count: {count}")\n    count += 1\n\n# Output:\n# Count: 0\n# Count: 1\n# Count: 2\n# Count: 3\n# Count: 4', language: 'python' },
+    { type: 'text', content: '⚠️ Be careful: if the condition never becomes `False`, you\'ll create an infinite loop. Always ensure the loop variable changes.' },
+    { type: 'heading', content: 'break and continue' },
+    { type: 'code', content: '# break: exit the loop early\nfor i in range(10):\n    if i == 5:\n        break\n    print(i)\n\n# continue: skip to next iteration\nfor i in range(5):\n    if i == 2:\n        continue\n    print(i)', language: 'python' },
+    { type: 'heading', content: 'Practice Task' },
+    { type: 'text', content: 'Write a while loop that asks the user for input until they type "quit". Print each input.' },
+  ],
+  'les_003': [
+    { type: 'heading', content: 'Loop Patterns' },
+    { type: 'text', content: 'Common patterns you\'ll use frequently in Python loops.' },
+    { type: 'heading', content: 'Enumerate' },
+    { type: 'code', content: 'fruits = ["apple", "banana", "cherry"]\n\nfor index, fruit in enumerate(fruits):\n    print(f"{index}: {fruit}")\n\n# Output:\n# 0: apple\n# 1: banana\n# 2: cherry', language: 'python' },
+    { type: 'heading', content: 'Zip' },
+    { type: 'code', content: 'names = ["Alice", "Bob", "Charlie"]\nages = [25, 30, 35]\n\nfor name, age in zip(names, ages):\n    print(f"{name} is {age} years old")', language: 'python' },
+    { type: 'heading', content: 'List Comprehension' },
+    { type: 'code', content: '# Traditional loop\nsquares = []\nfor x in range(10):\n    squares.append(x ** 2)\n\n# List comprehension (concise)\nsquares = [x ** 2 for x in range(10)]\n\n# With condition\neven_squares = [x ** 2 for x in range(10) if x % 2 == 0]', language: 'python' },
+  ],
+  'les_004': [
+    { type: 'heading', content: 'Nested Loops' },
+    { type: 'text', content: 'A nested loop is a loop inside another loop. The inner loop completes all its iterations before the outer loop moves to the next iteration.' },
+    { type: 'code', content: '# Multiplication table\nfor i in range(1, 4):\n    for j in range(1, 4):\n        print(f"{i} x {j} = {i * j}")\n    print()  # Empty line between tables', language: 'python' },
+    { type: 'heading', content: 'When to Use Nested Loops' },
+    { type: 'text', content: '• Processing 2D data (matrices, tables)\n• Comparing every pair of items\n• Generating combinations' },
+    { type: 'heading', content: 'Practice Task' },
+    { type: 'text', content: 'Write nested loops to print a 5x5 grid of asterisks (*). Each row should be on a new line.' },
+  ],
+  'les_005': [
+    { type: 'heading', content: 'Loop Performance' },
+    { type: 'text', content: 'While loops are powerful, they can be slower than for loops in Python. Here\'s how to write efficient loops.' },
+    { type: 'heading', content: 'Avoid Unnecessary Loops' },
+    { type: 'code', content: '# Slow: loop to find sum\nresult = 0\nfor i in range(1000000):\n    result += i\n\n# Fast: built-in sum()\nresult = sum(range(1000000))', language: 'python' },
+    { type: 'heading', content: 'Use Generators for Large Data' },
+    { type: 'code', content: '# Memory efficient generator\ndef fibonacci():\n    a, b = 0, 1\n    while True:\n        yield a\n        a, b = b, a + b\n\n# Get first 10 Fibonacci numbers\nfib = fibonacci()\nfor _ in range(10):\n    print(next(fib))', language: 'python' },
+    { type: 'heading', content: 'Practice Task' },
+    { type: 'text', content: 'Rewrite this slow code to be faster using Python built-ins:\n\n```python\nresult = []\nfor i in range(100):\n    if i % 2 == 0:\n        result.append(i * 2)\n```' },
+  ],
+};
+
+export const resources: Record<string, Resource[]> = {
+  'les_001': [
+    { id: 'res_001', title: 'Python Loops Cheat Sheet', type: 'pdf', url: '#', size: '245 KB' },
+    { id: 'res_002', title: 'Loop Exercises (ZIP)', type: 'zip', url: '#', size: '1.2 MB' },
+    { id: 'res_003', title: 'Python Docs: Control Flow', type: 'link', url: 'https://docs.python.org/3/tutorial/controlflow.html' },
+  ],
+  'les_002': [
+    { id: 'res_004', title: 'While Loops Guide', type: 'pdf', url: '#', size: '180 KB' },
+    { id: 'res_005', title: 'Infinite Loop Debugger', type: 'zip', url: '#', size: '890 KB' },
+  ],
+};
 
 export const courseReviews: CourseReview[] = [
   {
