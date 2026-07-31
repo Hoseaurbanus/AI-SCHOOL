@@ -224,3 +224,21 @@ export interface Note {
   content: string;
   updatedAt: string;
 }
+
+export type CodeLanguage = 'html' | 'python' | 'markdown';
+
+export interface CodeExercise {
+  id: string;
+  title: string;
+  language: CodeLanguage;
+  description: string;
+  starterCode: string;
+  solution?: string;
+  testCases?: { input: string; expected: string }[];
+}
+
+export interface ExecutionResult {
+  output: string;
+  error?: string;
+  status: 'success' | 'error';
+}
