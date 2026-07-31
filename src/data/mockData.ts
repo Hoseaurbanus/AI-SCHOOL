@@ -1,4 +1,4 @@
-import type { Course, CourseModule, CourseReview, Enrollment, ChatMessage, AIInsight, StudentStats, LearningStreak, LessonContent, Resource, CodeExercise, AdminStats, Transaction, Certificate, KnowledgeBase, Assessment } from '../types';
+import type { Course, CourseModule, CourseReview, Enrollment, ChatMessage, AIInsight, StudentStats, LearningStreak, LessonContent, Resource, CodeExercise, AdminStats, Transaction, Certificate, KnowledgeBase, Assessment, CertificateData, Notification } from '../types';
 
 export const courses: Course[] = [
   {
@@ -918,5 +918,120 @@ export const assessments: Assessment[] = [
         points: 1,
       },
     ],
+  },
+];
+
+export const certificateData: CertificateData[] = [
+  {
+    id: 'CERT-DATA-001',
+    userId: 'u1',
+    courseId: '2',
+    courseName: 'Machine Learning Fundamentals',
+    studentName: 'Emeka Okafor',
+    score: 92,
+    issuedAt: '2026-06-20',
+    verificationCode: 'VRF-ML-2026-EMK-92',
+  },
+  {
+    id: 'CERT-DATA-002',
+    userId: 'u2',
+    courseId: '4',
+    courseName: 'React & TypeScript Mastery',
+    studentName: 'Adaeze Williams',
+    score: 88,
+    issuedAt: '2026-07-15',
+    verificationCode: 'VRF-RT-2026-ADZ-88',
+  },
+  {
+    id: 'CERT-DATA-003',
+    userId: 'u3',
+    courseId: '3',
+    courseName: 'Data Science with Python',
+    studentName: 'Chukwuemeka Eze',
+    score: 76,
+    issuedAt: '2026-07-28',
+    verificationCode: 'VRF-DS-2026-CWK-76',
+  },
+  {
+    id: 'CERT-DATA-004',
+    userId: 'u4',
+    courseId: '1',
+    courseName: 'Python for Artificial Intelligence',
+    studentName: 'Yetunde Akinola',
+    score: 95,
+    issuedAt: '2026-07-10',
+    verificationCode: 'VRF-PA-2026-YTD-95',
+  },
+];
+
+export const notifications: Notification[] = [
+  {
+    id: 'notif-1',
+    type: 'course',
+    title: 'New lesson available',
+    message: 'Module 4: Introduction to AI is now available in Python for Artificial Intelligence.',
+    timestamp: '2026-07-30T09:00:00Z',
+    read: false,
+    actionUrl: '/courses/1/learn',
+  },
+  {
+    id: 'notif-2',
+    type: 'achievement',
+    title: 'Certificate earned!',
+    message: 'Congratulations! You earned a certificate for Machine Learning Fundamentals with a score of 92%.',
+    timestamp: '2026-06-20T14:30:00Z',
+    read: true,
+    actionUrl: '/certificates',
+  },
+  {
+    id: 'notif-3',
+    type: 'system',
+    title: 'Platform maintenance scheduled',
+    message: 'Planned maintenance on August 2nd from 2:00 AM to 4:00 AM WAT.',
+    timestamp: '2026-07-28T08:00:00Z',
+    read: false,
+  },
+  {
+    id: 'notif-4',
+    type: 'reminder',
+    title: 'Continue your streak!',
+    message: "You're on a 12-day learning streak. Keep going to maintain your momentum!",
+    timestamp: '2026-07-30T06:00:00Z',
+    read: false,
+    actionUrl: '/courses',
+  },
+  {
+    id: 'notif-5',
+    type: 'course',
+    title: 'Assignment due soon',
+    message: 'Module 2 Challenge for Python for AI is due in 2 days.',
+    timestamp: '2026-07-29T10:00:00Z',
+    read: true,
+    actionUrl: '/courses/1/learn',
+  },
+  {
+    id: 'notif-6',
+    type: 'achievement',
+    title: 'Streak milestone reached!',
+    message: "You've maintained a 12-day learning streak. You've unlocked the Consistent Learner badge!",
+    timestamp: '2026-07-29T18:00:00Z',
+    read: false,
+  },
+  {
+    id: 'notif-7',
+    type: 'system',
+    title: 'New feature: AI Code Review',
+    message: 'Our AI can now review your code submissions and provide detailed feedback in real-time.',
+    timestamp: '2026-07-25T12:00:00Z',
+    read: true,
+  },
+  {
+    id: 'notif-8',
+    type: 'reminder',
+    title: 'Complete your profile',
+    message: 'Add a profile picture and bio to make your account complete. Students with complete profiles are 3x more likely to get hired.',
+    timestamp: '2026-07-20T09:00:00Z',
+    read: true,
+    actionUrl: '/profile',
   },
 ];

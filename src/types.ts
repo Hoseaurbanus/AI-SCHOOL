@@ -316,3 +316,26 @@ export interface AssessmentResult {
   timeTaken: number;
   completedAt: string;
 }
+
+export interface CertificateData {
+  id: string;
+  userId: string;
+  courseId: string;
+  courseName: string;
+  studentName: string;
+  score: number;
+  issuedAt: string;
+  verificationCode: string;
+}
+
+export type NotificationType = 'course' | 'achievement' | 'system' | 'reminder';
+
+export interface Notification {
+  id: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  timestamp: string;
+  read: boolean;
+  actionUrl?: string;
+}
