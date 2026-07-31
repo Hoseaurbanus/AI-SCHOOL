@@ -365,3 +365,23 @@ export interface AssignmentSubmission {
   feedback?: string;
   gradedAt?: string;
 }
+
+export interface PortfolioProject {
+  id: string;
+  title: string;
+  course: string;
+  courseId: string;
+  description: string;
+  tags: string[];
+  aiScore: number;
+  date: string;
+  status: 'completed' | 'in-progress';
+  codeSnippet?: string;
+  imageUrl?: string;
+}
+
+export interface StudentSkill {
+  name: string;
+  level: 'beginner' | 'intermediate' | 'advanced';
+  endorsements: number;
+}

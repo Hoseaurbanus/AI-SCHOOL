@@ -1,4 +1,4 @@
-import type { Course, CourseModule, CourseReview, Enrollment, ChatMessage, AIInsight, StudentStats, LearningStreak, LessonContent, Resource, CodeExercise, AdminStats, Transaction, Certificate, KnowledgeBase, Assessment, CertificateData, Notification, Assignment, AssignmentSubmission } from '../types';
+import type { Course, CourseModule, CourseReview, Enrollment, ChatMessage, AIInsight, StudentStats, LearningStreak, LessonContent, Resource, CodeExercise, AdminStats, Transaction, Certificate, KnowledgeBase, Assessment, CertificateData, Notification, Assignment, AssignmentSubmission, PortfolioProject, StudentSkill } from '../types';
 
 export const courses: Course[] = [
   {
@@ -1118,4 +1118,81 @@ export const assignmentSubmissions: AssignmentSubmission[] = [
     feedback: 'Good start but needs more work. The component lacks size variants and the CSS classes are not implemented. Please revise and resubmit with proper Tailwind classes.',
     gradedAt: '2026-07-29T11:00:00Z',
   },
+];
+
+export const portfolioProjects: PortfolioProject[] = [
+  {
+    id: 'proj_001',
+    title: 'Image Classifier with CNN',
+    course: 'Deep Learning & Neural Networks',
+    courseId: '7',
+    description: 'Built a convolutional neural network that classifies images into 10 categories using PyTorch. Achieved 94% accuracy on the test set with data augmentation and transfer learning.',
+    tags: ['Python', 'PyTorch', 'CNN', 'Deep Learning'],
+    aiScore: 94,
+    date: '2026-06-15',
+    status: 'completed',
+    codeSnippet: `import torch.nn as nn\n\nclass ImageClassifier(nn.Module):\n    def __init__(self, num_classes=10):\n        super().__init__()\n        self.features = nn.Sequential(\n            nn.Conv2d(3, 32, 3, padding=1),\n            nn.ReLU(),\n            nn.MaxPool2d(2),\n            nn.Conv2d(32, 64, 3, padding=1),\n            nn.ReLU(),\n            nn.MaxPool2d(2),\n        )\n        self.classifier = nn.Linear(64 * 8 * 8, num_classes)`,
+    imageUrl: 'https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=600&h=300&fit=crop',
+  },
+  {
+    id: 'proj_002',
+    title: 'React Dashboard with TypeScript',
+    course: 'React & TypeScript Mastery',
+    courseId: '4',
+    description: 'Created a real-time analytics dashboard using React, TypeScript, and Chart.js. Includes responsive layout, dark mode, and live data updates via WebSocket.',
+    tags: ['React', 'TypeScript', 'Chart.js', 'WebSocket'],
+    aiScore: 88,
+    date: '2026-05-20',
+    status: 'completed',
+    codeSnippet: `interface DashboardProps {\n  userId: string;\n  refreshInterval?: number;\n}\n\nconst Dashboard: React.FC<DashboardProps> = ({ userId, refreshInterval = 30000 }) => {\n  const [metrics, setMetrics] = useState<Metric[]>([]);\n  useEffect(() => {\n    const ws = connectWebSocket(userId);\n    ws.onmessage = (e) => setMetrics(JSON.parse(e.data));\n    return () => ws.close();\n  }, [userId]);`,
+    imageUrl: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=600&h=300&fit=crop',
+  },
+  {
+    id: 'proj_003',
+    title: 'Student Performance Predictor',
+    course: 'Machine Learning Fundamentals',
+    courseId: '2',
+    description: 'Developed a regression model to predict student exam scores based on study hours, attendance, and assignment completion. Used scikit-learn with feature engineering.',
+    tags: ['Python', 'scikit-learn', 'Regression', 'Pandas'],
+    aiScore: 92,
+    date: '2026-06-20',
+    status: 'completed',
+    codeSnippet: `from sklearn.ensemble import GradientBoostingRegressor\nfrom sklearn.model_selection import train_test_split\n\nmodel = GradientBoostingRegressor(\n    n_estimators=200,\n    learning_rate=0.1,\n    max_depth=4\n)\nX_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)\nmodel.fit(X_train, y_train)\nprint(f"R2 Score: {model.score(X_test, y_test):.3f}")`,
+    imageUrl: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=600&h=300&fit=crop',
+  },
+  {
+    id: 'proj_004',
+    title: 'REST API with Node.js',
+    course: 'Node.js Backend Engineering',
+    courseId: '5',
+    description: 'Built a complete REST API with authentication, rate limiting, and Swagger documentation. Deployed on Railway with PostgreSQL and Redis caching.',
+    tags: ['Node.js', 'Express', 'PostgreSQL', 'REST API'],
+    aiScore: 85,
+    date: '2026-07-10',
+    status: 'completed',
+    imageUrl: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600&h=300&fit=crop',
+  },
+  {
+    id: 'proj_005',
+    title: 'Personal Portfolio Website',
+    course: 'Data Science with Python',
+    courseId: '3',
+    description: 'Designed and deployed a personal portfolio showcasing data visualizations built with Matplotlib and Plotly. Features interactive charts and a contact form.',
+    tags: ['HTML', 'CSS', 'JavaScript', 'Data Viz'],
+    aiScore: 78,
+    date: '2026-07-25',
+    status: 'in-progress',
+    imageUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=300&fit=crop',
+  },
+];
+
+export const studentSkills: StudentSkill[] = [
+  { name: 'Python', level: 'advanced', endorsements: 24 },
+  { name: 'React', level: 'intermediate', endorsements: 18 },
+  { name: 'Machine Learning', level: 'intermediate', endorsements: 15 },
+  { name: 'TypeScript', level: 'intermediate', endorsements: 12 },
+  { name: 'Node.js', level: 'beginner', endorsements: 8 },
+  { name: 'SQL', level: 'advanced', endorsements: 20 },
+  { name: 'Git & GitHub', level: 'advanced', endorsements: 22 },
+  { name: 'Data Visualization', level: 'intermediate', endorsements: 10 },
 ];
