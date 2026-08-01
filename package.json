@@ -10,6 +10,7 @@
     "format": "oxfmt"
   },
   "dependencies": {
+    "@clerk/clerk-react": "^5.61.9",
     "@hookform/resolvers": "^5.5.7",
     "@monaco-editor/react": "^4.7.0",
     "@tanstack/react-query": "^5.101.4",

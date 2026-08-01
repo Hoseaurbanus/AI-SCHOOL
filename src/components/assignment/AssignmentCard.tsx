@@ -1,48 +1,54 @@
-import { Calendar, Clock, FileCode, Send } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import type { Assignment } from '../../types';
-import { courses, assignmentSubmissions } from '../../data/mockData';
+import { Calendar, Clock, FileCode, Send } from "lucide-react"
+import { useNavigate } from "react-router-dom"
+import type { Assignment } from "../../types"
+import { courses, assignmentSubmissions } from "../../data/mockData"
 
 interface AssignmentCardProps {
-  assignment: Assignment;
+  assignment: Assignment
 }
 
 export default function AssignmentCard({ assignment }: AssignmentCardProps) {
-  const navigate = useNavigate();
-  const course = courses.find((c) => c.id === assignment.courseId);
-  const submission = assignmentSubmissions.find((s) => s.assignmentId === assignment.id);
+  const navigate = useNavigate()
+  const course = courses.find((c) => c.id === assignment.courseId)
+  const submission = assignmentSubmissions.find(
+    (s) => s.assignmentId === assignment.id,
+  )
 
-  const statusColors: Record<string, { bg: string; text: string }> = {
-    pending: { bg: 'rgba(107,114,128,0.1)', text: '#6B7280' },
-    submitted: { bg: 'rgba(59,130,246,0.1)', text: '#3B82F6' },
-    graded: { bg: 'rgba(34,197,94,0.1)', text: '#22C55E' },
-    returned: { bg: 'rgba(234,179,8,0.1)', text: '#EAB308' },
-  };
+  const statusColors: Record<string, { bg: string text: string }> = {
+    pending: { bg: "rgba(107,114,128,0.1)", text: "#6B7280" },
+    submitted: { bg: "rgba(59,130,246,0.1)", text: "#3B82F6" },
+    graded: { bg: "rgba(34,197,94,0.1)", text: "#22C55E" },
+    returned: { bg: "rgba(234,179,8,0.1)", text: "#EAB308" },
+  }
 
   const statusLabels: Record<string, string> = {
-    pending: 'Pending',
-    submitted: 'Submitted',
-    graded: 'Graded',
-    returned: 'Returned',
-  };
+    pending: "Pending",
+    submitted: "Submitted",
+    graded: "Graded",
+    returned: "Returned",
+  }
 
   const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-  };
+    const date = new Date(dateStr)
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    })
+  }
 
   const languageIcon: Record<string, string> = {
-    python: '🐍',
-    html: '🌐',
-    javascript: '⚡',
-  };
+    python: "🐍",
+    html: "🌐",
+    javascript: "⚡",
+  }
 
   return (
     <div
       className="group rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer hover:scale-[1.02]"
       style={{
-        background: '#0D1421',
-        border: '1px solid rgba(59,130,246,0.1)',
+        background: "#0D1421",
+        border: "1px solid rgba(59,130,246,0.1)",
       }}
       onClick={() => navigate(`/assignments?id=${assignment.id}`)}
     >
@@ -52,9 +58,10 @@ export default function AssignmentCard({ assignment }: AssignmentCardProps) {
             <span className="text-lg">{languageIcon[assignment.language]}</span>
             <span
               className="px-2 py-1 rounded-full text-xs font-medium"
-              style={{ background: 'rgba(59,130,246,0.1)', color: '#3B82F6' }}
+              style={{ background: "rgba(59,130,246,0.1)", color: "#3B82F6" }}
             >
-              {assignment.language.charAt(0).toUpperCase() + assignment.language.slice(1)}
+              {assignment.language.charAt(0).toUpperCase() +
+                assignment.language.slice(1)}
             </span>
           </div>
           <div className="flex items-center gap-2">
@@ -72,8 +79,8 @@ export default function AssignmentCard({ assignment }: AssignmentCardProps) {
             <span
               className="px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1"
               style={{
-                background: 'rgba(34,197,94,0.1)',
-                color: '#22C55E',
+                background: "rgba(34,197,94,0.1)",
+                color: "#22C55E",
               }}
             >
               <FileCode size={12} />
@@ -84,18 +91,21 @@ export default function AssignmentCard({ assignment }: AssignmentCardProps) {
 
         <h3
           className="font-bold font-display text-lg mb-2 line-clamp-2"
-          style={{ color: '#F1F5F9' }}
+          style={{ color: "#F1F5F9" }}
         >
           {assignment.title}
         </h3>
 
         {course && (
-          <p className="text-sm mb-3" style={{ color: '#94A3B8' }}>
+          <p className="text-sm mb-3" style={{ color: "#94A3B8" }}>
             {course.title}
           </p>
         )}
 
-        <div className="flex items-center gap-4 text-xs mb-4" style={{ color: '#64748B' }}>
+        <div
+          className="flex items-center gap-4 text-xs mb-4"
+          style={{ color: "#64748B" }}
+        >
           <div className="flex items-center gap-1">
             <Calendar size={12} />
             <span>Due {formatDate(assignment.dueDate)}</span>
@@ -106,20 +116,26 @@ export default function AssignmentCard({ assignment }: AssignmentCardProps) {
           </div>
         </div>
 
-        <div className="flex items-center justify-between pt-4" style={{ borderTop: '1px solid rgba(59,130,246,0.1)' }}>
-          <p className="text-sm line-clamp-2 flex-1 mr-4" style={{ color: '#94A3B8' }}>
+        <div
+          className="flex items-center justify-between pt-4"
+          style={{ borderTop: "1px solid rgba(59,130,246,0.1)" }}
+        >
+          <p
+            className="text-sm line-clamp-2 flex-1 mr-4"
+            style={{ color: "#94A3B8" }}
+          >
             {assignment.description}
           </p>
           <button
             className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all shrink-0"
             style={{
-              background: 'rgba(59,130,246,0.1)',
-              color: '#3B82F6',
-              border: '1px solid rgba(59,130,246,0.2)',
+              background: "rgba(59,130,246,0.1)",
+              color: "#3B82F6",
+              border: "1px solid rgba(59,130,246,0.2)",
             }}
             onClick={(e) => {
-              e.stopPropagation();
-              navigate(`/assignments?id=${assignment.id}`);
+              e.stopPropagation()
+              navigate(`/assignments?id=${assignment.id}`)
             }}
           >
             View <Send size={14} />
@@ -127,5 +143,5 @@ export default function AssignmentCard({ assignment }: AssignmentCardProps) {
         </div>
       </div>
     </div>
-  );
+  )
 }

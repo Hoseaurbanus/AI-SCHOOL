@@ -1,7 +1,7 @@
 interface ProgressRingProps {
-  progress: number;
-  size?: number;
-  strokeWidth?: number;
+  progress: number
+  size?: number
+  strokeWidth?: number
 }
 
 export default function ProgressRing({
@@ -9,16 +9,16 @@ export default function ProgressRing({
   size = 60,
   strokeWidth = 4,
 }: ProgressRingProps) {
-  const radius = (size - strokeWidth) / 2;
-  const circumference = radius * 2 * Math.PI;
-  const offset = circumference - (progress / 100) * circumference;
+  const radius = (size - strokeWidth) / 2
+  const circumference = radius * 2 * Math.PI
+  const offset = circumference - (progress / 100) * circumference
 
   const getColor = () => {
-    if (progress >= 80) return '#10B981';
-    if (progress >= 50) return '#3B82F6';
-    if (progress >= 25) return '#F59E0B';
-    return '#64748B';
-  };
+    if (progress >= 80) return "#10B981"
+    if (progress >= 50) return "#3B82F6"
+    if (progress >= 25) return "#F59E0B"
+    return "#64748B"
+  }
 
   return (
     <div className="relative inline-flex items-center justify-center">
@@ -51,5 +51,5 @@ export default function ProgressRing({
         {progress}%
       </span>
     </div>
-  );
+  )
 }

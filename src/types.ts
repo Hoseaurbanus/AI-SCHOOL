@@ -1,387 +1,352 @@
-export type Page =
-  | 'landing'
-  | 'marketplace'
-  | 'course-details'
-  | 'about'
-  | 'contact'
-  | 'login'
-  | 'register'
-  | 'forgot-password'
-  | 'email-verify'
-  | 'onboarding'
-  | 'student-dashboard'
-  | 'my-courses'
-  | 'course-learning'
-  | 'ai-tutor'
-  | 'coding-lab'
-  | 'assignment'
-  | 'assessment'
-  | 'results'
-  | 'portfolio'
-  | 'certificate'
-  | 'profile'
-  | 'settings'
-  | 'checkout'
-  | 'payment-success'
-  | 'payment-failed'
-  | 'notifications'
-  | 'admin-login'
-  | 'admin-dashboard'
-  | 'admin-users'
-  | 'admin-courses'
-  | 'admin-analytics'
-  | 'admin-payments'
-  | 'admin-certificates'
-  | 'admin-ai'
-  | '404';
+export type Page = "landing" | "marketplace" | "course-details" | "about" | "contact" | "login" | "register" | "forgot-password" | "email-verify" | "onboarding" | "student-dashboard" | "my-courses" | "course-learning" | "ai-tutor" | "coding-lab" | "assignment" | "assessment" | "results" | "portfolio" | "certificate" | "profile" | "settings" | "checkout" | "payment-success" | "payment-failed" | "notifications" | "admin-login" | "admin-dashboard" | "admin-users" | "admin-courses" | "admin-analytics" | "admin-payments" | "admin-certificates" | "admin-ai" | "404"
 
-export type UserRole = 'guest' | 'student' | 'admin';
+export type UserRole = "guest" | "student" | "admin"
 
 export interface User {
-  id: string;
-  email: string;
-  name: string;
-  phone?: string;
-  role: UserRole;
-  avatarUrl?: string;
-  onboardingCompleted: boolean;
-  emailVerified: boolean;
-  createdAt: string;
+  id: string
+  email: string
+  name: string
+  phone?: string
+  role: UserRole
+  avatarUrl?: string
+  onboardingCompleted: boolean
+  emailVerified: boolean
+  createdAt: string
 }
 
 export interface AuthState {
-  user: User | null;
-  token: string | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  login: (data: LoginRequest) => Promise<void>;
-  register: (data: RegisterRequest) => Promise<void>;
-  logout: () => void;
-  setUser: (user: User) => void;
+  user: User | null
+  token: string | null
+  isAuthenticated: boolean
+  isLoading: boolean
+  login: (data: LoginRequest) => Promise<void>
+  register: (data: RegisterRequest) => Promise<void>
+  logout: () => void
+  setUser: (user: User) => void
 }
 
 export interface LoginRequest {
-  email: string;
-  password: string;
+  email: string
+  password: string
 }
 
 export interface RegisterRequest {
-  name: string;
-  email: string;
-  phone?: string;
-  password: string;
+  name: string
+  email: string
+  phone?: string
+  password: string
 }
 
 export interface ApiResponse<T> {
-  success: boolean;
-  data: T;
-  message?: string;
+  success: boolean
+  data: T
+  message?: string
 }
 
 export interface Course {
-  id: string;
-  title: string;
-  category: string;
-  level: 'Beginner' | 'Intermediate' | 'Advanced';
-  duration: string;
-  rating: number;
-  students: number;
-  price: number;
-  image: string;
-  instructor: string;
-  description: string;
-  aiTutor: boolean;
-  featured: boolean;
-  tags: string[];
-  lessons: number;
-  projects: number;
+  id: string
+  title: string
+  category: string
+  level: "Beginner" | "Intermediate" | "Advanced"
+  duration: string
+  rating: number
+  students: number
+  price: number
+  image: string
+  instructor: string
+  description: string
+  aiTutor: boolean
+  featured: boolean
+  tags: string[]
+  lessons: number
+  projects: number
 }
 
 export interface Lesson {
-  id: string;
-  title: string;
-  duration: string;
-  type: 'video' | 'reading' | 'exercise' | 'quiz';
-  completed?: boolean;
+  id: string
+  title: string
+  duration: string
+  type: "video" | "reading" | "exercise" | "quiz"
+  completed?: boolean
 }
 
 export interface CourseModule {
-  id: string;
-  title: string;
-  description: string;
-  lessons: Lesson[];
-  duration: string;
+  id: string
+  title: string
+  description: string
+  lessons: Lesson[]
+  duration: string
 }
 
 export interface CourseReview {
-  id: string;
-  userId: string;
-  userName: string;
-  userAvatar: string;
-  rating: number;
-  comment: string;
-  date: string;
-  helpful: number;
+  id: string
+  userId: string
+  userName: string
+  userAvatar: string
+  rating: number
+  comment: string
+  date: string
+  helpful: number
 }
 
 export interface CartItem {
-  courseId: string;
-  addedAt: string;
+  courseId: string
+  addedAt: string
 }
 
 export interface Enrollment {
-  id: string;
-  courseId: string;
-  userId: string;
-  status: 'active' | 'completed' | 'paused' | 'saved';
-  progress: number;
-  enrolledAt: string;
-  completedAt?: string;
-  lastAccessedAt: string;
-  currentModule: number;
-  currentLesson: number;
+  id: string
+  courseId: string
+  userId: string
+  status: "active" | "completed" | "paused" | "saved"
+  progress: number
+  enrolledAt: string
+  completedAt?: string
+  lastAccessedAt: string
+  currentModule: number
+  currentLesson: number
 }
 
 export interface CourseFilter {
-  search: string;
-  category: string;
-  level: string;
-  sortBy: string;
-  priceRange: [number, number];
+  search: string
+  category: string
+  level: string
+  sortBy: string
+  priceRange: [number, number]
 }
 
 export interface PaymentMethod {
-  id: string;
-  name: string;
-  description: string;
-  icon: string;
+  id: string
+  name: string
+  description: string
+  icon: string
 }
 
 export interface NavProps {
-  navigate: (page: Page) => void;
-  currentPage: Page;
+  navigate: (page: Page) => void
+  currentPage: Page
 }
 
 export interface ChatMessage {
-  id: string;
-  role: 'user' | 'ai';
-  content: string;
-  code?: string;
-  timestamp: string;
-  courseId?: string;
-  lessonId?: string;
+  id: string
+  role: "user" | "ai"
+  content: string
+  code?: string
+  timestamp: string
+  courseId?: string
+  lessonId?: string
 }
 
 export interface AIInsight {
-  id: string;
-  type: 'recommendation' | 'warning' | 'achievement' | 'tip';
-  title: string;
-  description: string;
-  action?: string;
-  actionPath?: string;
-  icon: string;
+  id: string
+  type: "recommendation" | "warning" | "achievement" | "tip"
+  title: string
+  description: string
+  action?: string
+  actionPath?: string
+  icon: string
 }
 
 export interface StudentStats {
-  totalCourses: number;
-  activeCourses: number;
-  completedCourses: number;
-  totalHours: number;
-  currentStreak: number;
-  longestStreak: number;
-  lessonsCompleted: number;
-  totalLessons: number;
-  avgScore: number;
-  certificates: number;
+  totalCourses: number
+  activeCourses: number
+  completedCourses: number
+  totalHours: number
+  currentStreak: number
+  longestStreak: number
+  lessonsCompleted: number
+  totalLessons: number
+  avgScore: number
+  certificates: number
 }
 
 export interface LearningStreak {
-  current: number;
-  longest: number;
-  lastActive: string;
-  weeklyActivity: boolean[];
+  current: number
+  longest: number
+  lastActive: string
+  weeklyActivity: boolean[]
 }
 
 export interface LessonContent {
-  type: 'text' | 'code' | 'image' | 'heading';
-  content: string;
-  language?: string;
-  caption?: string;
+  type: "text" | "code" | "image" | "heading"
+  content: string
+  language?: string
+  caption?: string
 }
 
 export interface Resource {
-  id: string;
-  title: string;
-  type: 'pdf' | 'zip' | 'link';
-  url: string;
-  size?: string;
+  id: string
+  title: string
+  type: "pdf" | "zip" | "link"
+  url: string
+  size?: string
 }
 
 export interface Note {
-  id: string;
-  lessonId: string;
-  userId: string;
-  content: string;
-  updatedAt: string;
+  id: string
+  lessonId: string
+  userId: string
+  content: string
+  updatedAt: string
 }
 
-export type CodeLanguage = 'html' | 'python' | 'markdown';
+export type CodeLanguage = "html" | "python" | "markdown"
 
 export interface CodeExercise {
-  id: string;
-  title: string;
-  language: CodeLanguage;
-  description: string;
-  starterCode: string;
-  solution?: string;
-  testCases?: { input: string; expected: string }[];
+  id: string
+  title: string
+  language: CodeLanguage
+  description: string
+  starterCode: string
+  solution?: string
+  testCases?: { input: string expected: string }[]
 }
 
 export interface ExecutionResult {
-  output: string;
-  error?: string;
-  status: 'success' | 'error';
+  output: string
+  error?: string
+  status: "success" | "error"
 }
 
 export interface AdminStats {
-  totalStudents: number;
-  totalRevenue: number;
-  totalCourses: number;
-  completionRate: number;
-  activeUsers: number;
-  aiTutorQueries: number;
-  avgRating: number;
-  serverUptime: number;
+  totalStudents: number
+  totalRevenue: number
+  totalCourses: number
+  completionRate: number
+  activeUsers: number
+  aiTutorQueries: number
+  avgRating: number
+  serverUptime: number
 }
 
 export interface Transaction {
-  id: string;
-  studentName: string;
-  courseName: string;
-  amount: number;
-  status: 'success' | 'pending' | 'failed';
-  date: string;
+  id: string
+  studentName: string
+  courseName: string
+  amount: number
+  status: "success" | "pending" | "failed"
+  date: string
 }
 
 export interface Certificate {
-  id: string;
-  studentName: string;
-  courseName: string;
-  score: number;
-  date: string;
-  status: 'issued' | 'pending';
+  id: string
+  studentName: string
+  courseName: string
+  score: number
+  date: string
+  status: "issued" | "pending"
 }
 
 export interface KnowledgeBase {
-  id: string;
-  name: string;
-  courseId: string;
-  documents: number;
-  lastUpdated: string;
+  id: string
+  name: string
+  courseId: string
+  documents: number
+  lastUpdated: string
 }
 
-export type QuestionType = 'multiple-choice' | 'multiple-select' | 'true-false' | 'code-completion';
+export type QuestionType = "multiple-choice" | "multiple-select" | "true-false" | "code-completion"
 
 export interface Question {
-  id: string;
-  type: QuestionType;
-  text: string;
-  code?: string;
-  options: { id: string; text: string }[];
-  correctAnswers: string[];
-  explanation: string;
-  points: number;
+  id: string
+  type: QuestionType
+  text: string
+  code?: string
+  options: { id: string text: string }[]
+  correctAnswers: string[]
+  explanation: string
+  points: number
 }
 
 export interface Assessment {
-  id: string;
-  title: string;
-  description: string;
-  courseId: string;
-  moduleId?: string;
-  timeLimit: number;
-  passingScore: number;
-  questions: Question[];
-  attempts: number;
-  maxAttempts: number;
+  id: string
+  title: string
+  description: string
+  courseId: string
+  moduleId?: string
+  timeLimit: number
+  passingScore: number
+  questions: Question[]
+  attempts: number
+  maxAttempts: number
 }
 
 export interface AssessmentResult {
-  id: string;
-  assessmentId: string;
-  userId: string;
-  answers: Record<string, string[]>;
-  score: number;
-  passed: boolean;
-  timeTaken: number;
-  completedAt: string;
+  id: string
+  assessmentId: string
+  userId: string
+  answers: Record<string, string[]>
+  score: number
+  passed: boolean
+  timeTaken: number
+  completedAt: string
 }
 
 export interface CertificateData {
-  id: string;
-  userId: string;
-  courseId: string;
-  courseName: string;
-  studentName: string;
-  score: number;
-  issuedAt: string;
-  verificationCode: string;
+  id: string
+  userId: string
+  courseId: string
+  courseName: string
+  studentName: string
+  score: number
+  issuedAt: string
+  verificationCode: string
 }
 
-export type NotificationType = 'course' | 'achievement' | 'system' | 'reminder';
+export type NotificationType = "course" | "achievement" | "system" | "reminder"
 
 export interface Notification {
-  id: string;
-  type: NotificationType;
-  title: string;
-  message: string;
-  timestamp: string;
-  read: boolean;
-  actionUrl?: string;
+  id: string
+  type: NotificationType
+  title: string
+  message: string
+  timestamp: string
+  read: boolean
+  actionUrl?: string
 }
 
-export type AssignmentStatus = 'pending' | 'submitted' | 'graded' | 'returned';
+export type AssignmentStatus = "pending" | "submitted" | "graded" | "returned"
 
 export interface Assignment {
-  id: string;
-  courseId: string;
-  title: string;
-  description: string;
-  requirements: { text: string; points: number }[];
-  dueDate: string;
-  totalPoints: number;
-  language: 'python' | 'html' | 'javascript';
-  starterCode?: string;
+  id: string
+  courseId: string
+  title: string
+  description: string
+  requirements: { text: string points: number }[]
+  dueDate: string
+  totalPoints: number
+  language: "python" | "html" | "javascript"
+  starterCode?: string
 }
 
 export interface AssignmentSubmission {
-  id: string;
-  assignmentId: string;
-  studentId: string;
-  code: string;
-  submittedAt: string;
-  status: AssignmentStatus;
-  score?: number;
-  feedback?: string;
-  gradedAt?: string;
+  id: string
+  assignmentId: string
+  studentId: string
+  code: string
+  submittedAt: string
+  status: AssignmentStatus
+  score?: number
+  feedback?: string
+  gradedAt?: string
 }
 
 export interface PortfolioProject {
-  id: string;
-  title: string;
-  course: string;
-  courseId: string;
-  description: string;
-  tags: string[];
-  aiScore: number;
-  date: string;
-  status: 'completed' | 'in-progress';
-  codeSnippet?: string;
-  imageUrl?: string;
+  id: string
+  title: string
+  course: string
+  courseId: string
+  description: string
+  tags: string[]
+  aiScore: number
+  date: string
+  status: "completed" | "in-progress"
+  codeSnippet?: string
+  imageUrl?: string
 }
 
 export interface StudentSkill {
-  name: string;
-  level: 'beginner' | 'intermediate' | 'advanced';
-  endorsements: number;
+  name: string
+  level: "beginner" | "intermediate" | "advanced"
+  endorsements: number
 }

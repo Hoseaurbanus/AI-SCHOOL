@@ -1,14 +1,14 @@
-import { create } from 'zustand';
-import type { ChatMessage } from '../types';
+import { create } from "zustand"
+import type { ChatMessage } from "../types"
 
 interface ChatState {
-  messages: ChatMessage[];
-  isTyping: boolean;
-  activeCourseId: string | null;
-  addMessage: (message: ChatMessage) => void;
-  setTyping: (typing: boolean) => void;
-  setActiveCourse: (courseId: string | null) => void;
-  clearMessages: () => void;
+  messages: ChatMessage[]
+  isTyping: boolean
+  activeCourseId: string | null
+  addMessage: (message: ChatMessage) => void
+  setTyping: (typing: boolean) => void
+  setActiveCourse: (courseId: string | null) => void
+  clearMessages: () => void
 }
 
 export const useChatStore = create<ChatState>((set) => ({
@@ -19,18 +19,18 @@ export const useChatStore = create<ChatState>((set) => ({
   addMessage: (message: ChatMessage) => {
     set((state) => ({
       messages: [...state.messages, message],
-    }));
+    }))
   },
 
   setTyping: (typing: boolean) => {
-    set({ isTyping: typing });
+    set({ isTyping: typing })
   },
 
   setActiveCourse: (courseId: string | null) => {
-    set({ activeCourseId: courseId });
+    set({ activeCourseId: courseId })
   },
 
   clearMessages: () => {
-    set({ messages: [] });
+    set({ messages: [] })
   },
-}));
+}))

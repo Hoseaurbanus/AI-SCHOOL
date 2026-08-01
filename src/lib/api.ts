@@ -1,37 +1,50 @@
-import axios from 'axios';
+import axios from "axios"
+import { useAuth as useClerkAuth } from "@clerk/clerk-react"
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL || "http://localhost:3001/api/v1"
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
-});
+})
 
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('auth_token');
+api.interceptors.request.use(async (config) => {
+  const token = localStorage.getItem("clerk_session_token")
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+    config.headers.Authorization = `Bearer ${token}`
   }
-  return config;
-});
+  return config
+})
 
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('auth_token');
-      window.location.href = '/login';
+      localStorage.removeItem("clerk_session_token")
+      window.location.href = "/login"
     }
-    return Promise.reject(error);
-  }
-);
+    return Promise.reject(error)
+  },
+)
 
 export const setAuthToken = (token: string) => {
-  localStorage.setItem('auth_token', token);
-};
+  localStorage.setItem("clerk_session_token", token)
+}
 
 export const clearAuthToken = () => {
-  localStorage.removeItem('auth_token');
-};
+  localStorage.removeItem("clerk_session_token")
+}
+
+export function useApi() {
+  const { getToken } = useClerkAuth()
+
+  const getAuthHeaders = async () => {
+    const token = await getToken()
+    return token ? { Authorization: `Bearer ${token}` } : {}
+  }
+
+  return { api, getAuthHeaders }
+}
