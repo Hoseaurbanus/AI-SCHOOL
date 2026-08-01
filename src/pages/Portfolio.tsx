@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom'
 import { Award, BarChart3, TrendingUp } from 'lucide-react'
 import PortfolioCard from '../components/portfolio/PortfolioCard'
 import SkillsSummary from '../components/portfolio/SkillsSummary'
@@ -5,6 +6,7 @@ import CertificateShowcase from '../components/portfolio/CertificateShowcase'
 import { portfolioProjects, studentSkills, certificateData } from '../data/mockData'
 
 export default function Portfolio() {
+  const navigate = useNavigate()
   const completedProjects = portfolioProjects.filter(p => p.status === 'completed').length
   const avgScore = Math.round(portfolioProjects.reduce((a, p) => a + p.aiScore, 0) / portfolioProjects.length)
   const certificatesEarned = certificateData.length
@@ -82,7 +84,7 @@ export default function Portfolio() {
         </div>
       </div>
 
-      <CertificateShowcase />
+      <CertificateShowcase onNavigate={(path) => navigate(path)} />
 
       <div className="mb-8">
         <h2 className="text-lg font-semibold font-display mb-4" style={{ color: '#F1F5F9' }}>
