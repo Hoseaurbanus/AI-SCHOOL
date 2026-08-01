@@ -1,0 +1,28 @@
+import { FastifyInstance } from 'fastify';
+import { courseRoutes } from './courses.js';
+import { enrollmentRoutes } from './enrollments.js';
+import { aiRoutes } from './ai.js';
+import { userRoutes } from './users.js';
+import { assessmentRoutes } from './assessments.js';
+import { submissionRoutes } from './submissions.js';
+import { certificateRoutes } from './certificates.js';
+
+export async function routes(app: FastifyInstance) {
+  // Health check
+  app.get('/health', async () => {
+    return { 
+      status: 'ok', 
+      timestamp: new Date().toISOString(),
+      version: '1.0.0',
+    };
+  });
+
+  // Register route modules
+  await app.register(courseRoutes, { prefix: '/courses' });
+  await app.register(enrollmentRoutes, { prefix: '/enrollments' });
+  await app.register(aiRoutes, { prefix: '/ai' });
+  await app.register(userRoutes, { prefix: '/users' });
+  await app.register(assessmentRoutes, { prefix: '/assessments' });
+  await app.register(submissionRoutes, { prefix: '/submissions' });
+  await app.register(certificateRoutes, { prefix: '/certificates' });
+}
