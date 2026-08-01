@@ -30,14 +30,15 @@ export default function CertificateShowcase({ onNavigate }: CertificateShowcaseP
           msOverflowStyle: 'none',
         }}
       >
-        {certificates.map(cert => (
+        {issuedCertificates.map(cert => (
           <div
             key={cert.id}
-            className="flex-shrink-0 w-64 rounded-xl border p-4 transition-all duration-200 hover:border-opacity-30"
+            className="flex-shrink-0 w-64 rounded-xl border p-4 transition-all duration-200 hover:border-opacity-30 cursor-pointer"
             style={{
               background: '#0D1421',
-              borderColor: cert.status === 'issued' ? 'rgba(34,197,94,0.2)' : 'rgba(59,130,246,0.1)',
+              borderColor: 'rgba(34,197,94,0.2)',
             }}
+            onClick={() => onNavigate?.(`certificate-${cert.id}`)}
           >
             <div className="flex items-start justify-between mb-3">
               <div
