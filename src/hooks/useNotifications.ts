@@ -1,46 +1,47 @@
-import { useState, useEffect, useCallback } from "react"
-import { notifications as mockNotifications } from "../data/mockData"
-import type { Notification } from "../types"
-
-const STORAGE_KEY = "smugflex_notifications"
-
-function getStoredNotifications(): Notification[] {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY)
-    return stored ? JSON.parse(stored) : mockNotifications
-  } catch {
-    return mockNotifications
-  }
-}
-
-function saveNotifications(notifications: Notification[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(notifications))
-}
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import {
+  notificationService,
+  type Notification,
+} from "../services/notificationService"
 
 export function useNotifications() {
-  const [notifications, setNotifications] = useState<Notification[]>(() =>
-    getStoredNotifications(),
-  )
+  const queryClient = useQueryClient()
 
-  useEffect(() => {
-    saveNotifications(notifications)
-  }, [notifications])
+  const { data: notifications = [], isLoading } = useQuery({
+    queryKey: ["notifications"],
+    queryFn: () => notificationService.getNotifications(),
+    staleTime: 30 * 1000,
+  })
 
-  const unreadCount = notifications.filter((n) => !n.read).length
+  const markAsRead = useMutation({
+    mutationFn: (id: string) => notificationService.markAsRead(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notifications"] })
+    },
+  })
 
-  const markAsRead = useCallback((id: string) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
-    )
-  }, [])
+  const markAllAsRead = useMutation({
+    mutationFn: () => notificationService.markAllAsRead(),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notifications"] })
+    },
+  })
 
-  const markAllAsRead = useCallback(() => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })))
-  }, [])
+  const deleteNotification = useMutation({
+    mutationFn: (id: string) => notificationService.deleteNotification(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["notifications"] })
+    },
+  })
 
-  const clearAll = useCallback(() => {
-    setNotifications([])
-  }, [])
+  const unreadCount = notifications.filter((n: Notification) => !n.read).length
 
-  return { notifications, unreadCount, markAsRead, markAllAsRead, clearAll }
+  return {
+    notifications,
+    unreadCount,
+    isLoading,
+    markAsRead: markAsRead.mutate,
+    markAllAsRead: markAllAsRead.mutate,
+    deleteNotification: deleteNotification.mutate,
+  }
 }

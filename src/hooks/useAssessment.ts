@@ -1,112 +1,60 @@
-import { useState, useEffect, useCallback } from "react"
-import type { Assessment, AssessmentResult, Question } from "../types"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import {
+  assessmentService,
+  type Assessment,
+  type AssessmentResult,
+} from "../services/assessmentService"
 
-interface UseAssessmentReturn {
-  currentQuestion: Question
-  currentIndex: number
-  answers: Record<string, string[]>
-  setAnswer: (questionId: string, answerIds: string[]) => void
-  goNext: () => void
-  goPrev: () => void
-  goToQuestion: (index: number) => void
-  submit: () => AssessmentResult
-  result: AssessmentResult | null
-  timeRemaining: number
-  isSubmitted: boolean
-  totalQuestions: number
+export function useAssessments(params?: { courseId?: string; moduleId?: string }) {
+  return useQuery({
+    queryKey: ["assessments", params],
+    queryFn: () => assessmentService.getAssessments(params),
+    staleTime: 5 * 60 * 1000,
+  })
 }
 
-export function useAssessment(assessment: Assessment): UseAssessmentReturn {
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [answers, setAnswers] = useState<Record<string, string[]>>({})
-  const [result, setResult] = useState<AssessmentResult | null>(null)
-  const [timeRemaining, setTimeRemaining] = useState(assessment.timeLimit * 60)
+export function useAssessment(id: string) {
+  return useQuery({
+    queryKey: ["assessments", id],
+    queryFn: () => assessmentService.getAssessment(id),
+    enabled: !!id,
+    staleTime: 5 * 60 * 1000,
+  })
+}
 
-  const currentQuestion = assessment.questions[currentIndex]
+export function useStartAssessment() {
+  const queryClient = useQueryClient()
 
-  useEffect(() => {
-    if (result) return
-    const timer = setInterval(() => {
-      setTimeRemaining((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer)
-          return 0
-        }
-        return prev - 1
-      })
-    }, 1000)
-    return () => clearInterval(timer)
-  }, [result])
+  return useMutation({
+    mutationFn: (id: string) => assessmentService.startAssessment(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["assessments"] })
+    },
+  })
+}
 
-  useEffect(() => {
-    if (timeRemaining === 0 && !result) {
-      submit()
-    }
-  }, [timeRemaining, result])
+export function useSubmitAssessment() {
+  const queryClient = useQueryClient()
 
-  const setAnswer = useCallback((questionId: string, answerIds: string[]) => {
-    setAnswers((prev) => ({ ...prev, [questionId]: answerIds }))
-  }, [])
-
-  const goNext = useCallback(() => {
-    setCurrentIndex((prev) =>
-      Math.min(prev + 1, assessment.questions.length - 1),
-    )
-  }, [assessment.questions.length])
-
-  const goPrev = useCallback(() => {
-    setCurrentIndex((prev) => Math.max(prev - 1, 0))
-  }, [])
-
-  const goToQuestion = useCallback((index: number) => {
-    setCurrentIndex(index)
-  }, [])
-
-  const calculateScore = useCallback(() => {
-    let totalPoints = 0
-    let earnedPoints = 0
-
-    assessment.questions.forEach((question) => {
-      totalPoints += question.points
-      const selected = answers[question.id] || []
-      const correct = question.correctAnswers
-      const isCorrect =
-        selected.length === correct.length &&
-        selected.every((s) => correct.includes(s))
-      if (isCorrect) earnedPoints += question.points
-    })
-
-    return totalPoints > 0 ? Math.round((earnedPoints / totalPoints) * 100) : 0
-  }, [assessment.questions, answers])
-
-  const submit = useCallback((): AssessmentResult => {
-    const score = calculateScore()
-    const assessmentResult: AssessmentResult = {
-      id: `result_${Date.now()}`,
-      assessmentId: assessment.id,
-      userId: "usr_001",
+  return useMutation({
+    mutationFn: ({
+      id,
       answers,
-      score,
-      passed: score >= assessment.passingScore,
-      timeTaken: assessment.timeLimit * 60 - timeRemaining,
-      completedAt: new Date().toISOString(),
-    }
-    setResult(assessmentResult)
-    return assessmentResult
-  }, [assessment, answers, timeRemaining, calculateScore])
+    }: {
+      id: string
+      answers: Record<string, string>
+    }) => assessmentService.submitAssessment(id, answers),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["assessments"] })
+      queryClient.invalidateQueries({ queryKey: ["assessmentResults"] })
+    },
+  })
+}
 
-  return {
-    currentQuestion,
-    currentIndex,
-    answers,
-    setAnswer,
-    goNext,
-    goPrev,
-    goToQuestion,
-    submit,
-    result,
-    timeRemaining,
-    isSubmitted: result !== null,
-    totalQuestions: assessment.questions.length,
-  }
+export function useMyAssessmentResults() {
+  return useQuery({
+    queryKey: ["assessmentResults"],
+    queryFn: () => assessmentService.getMyResults(),
+    staleTime: 5 * 60 * 1000,
+  })
 }

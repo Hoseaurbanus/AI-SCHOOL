@@ -17,7 +17,6 @@ import {
   TrendingUp,
 } from "lucide-react"
 import {
-  courses,
   categories,
   testimonials,
   pricingPlans,
@@ -96,8 +95,7 @@ export default function Landing() {
   const navigate = useNavigate()
   const [openFaq, setOpenFaq] = useState<number | null>(null)
   const { data: featuredData } = useFeaturedCourses()
-  const featuredCourses =
-    featuredData?.data || courses.filter((c) => c.featured).slice(0, 3)
+  const featuredCourses = featuredData?.data || []
 
   return (
     <div style={{ background: "#060A12" }}>

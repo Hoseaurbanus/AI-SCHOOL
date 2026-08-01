@@ -1,5 +1,5 @@
-import { useState } from "react"
-import { useSearchParams, useNavigate } from "react-router-dom"
+import { useState, useEffect } from "react"
+import { useSearchParams, useNavigate, useParams } from "react-router-dom"
 import {
   ArrowLeft,
   BookOpen,
@@ -9,40 +9,51 @@ import {
   FileText,
   Wrench,
 } from "lucide-react"
-import {
-  courses,
-  curriculum,
-  lessonContents,
-  resources,
-} from "../data/mockData"
-import { useLessonProgress } from "../hooks/useLessonProgress"
+import { useCourse } from "../hooks/useCourses"
+import { useEnrollment, useCompleteLesson } from "../hooks/useLessonProgress"
 import CurriculumList from "../components/course/CurriculumList"
 import LessonContent from "../components/learning/LessonContent"
 import NotesPanel from "../components/learning/NotesPanel"
 import ResourcesList from "../components/learning/ResourcesList"
+import LoadingSpinner from "../components/ui/LoadingSpinner"
 
 type Tab = "lesson" | "notes" | "resources"
 
 export default function CourseLearning() {
   const navigate = useNavigate()
+  const { courseId: urlCourseId } = useParams()
   const [searchParams, setSearchParams] = useSearchParams()
 
-  const courseId = searchParams.get("courseId") || courses[0].id
+  const courseId = urlCourseId || searchParams.get("courseId") || ""
   const moduleIndex = parseInt(searchParams.get("module") || "0", 10)
   const lessonIndex = parseInt(searchParams.get("lesson") || "0", 10)
 
-  const course = courses.find((c) => c.id === courseId) || courses[0]
-  const currentModule = curriculum[moduleIndex] || curriculum[0]
-  const currentLesson =
-    currentModule.lessons[lessonIndex] || currentModule.lessons[0]
-  const totalLessons = curriculum.reduce((sum, m) => sum + m.lessons.length, 0)
+  const { data: course, isLoading: courseLoading } = useCourse(courseId)
+  const { data: enrollment, isLoading: enrollmentLoading } =
+    useEnrollment(courseId)
+  const completeLesson = useCompleteLesson()
 
-  const { isCompleted, toggleLesson, progress, completedLessons } =
-    useLessonProgress(courseId, totalLessons)
+  const curriculum = course?.modules || []
+  const currentModule = curriculum[moduleIndex] || curriculum[0]
+  const currentLesson = currentModule?.lessons?.[lessonIndex] || null
+  const totalLessons = curriculum.reduce(
+    (sum: number, m: { lessons?: unknown[] }) =>
+      sum + (m.lessons?.length || 0),
+    0
+  )
+
+  const completedLessons = enrollment?.modules?.flatMap(
+    (m: { lessons: { completed: boolean; id: string }[] }) =>
+      m.lessons.filter((l) => l.completed).map((l) => l.id)
+  ) || []
+
+  const isCompleted = (lessonId: string) =>
+    completedLessons.includes(lessonId)
+
   const [activeTab, setActiveTab] = useState<Tab>("lesson")
 
-  const lessonContent = lessonContents[currentLesson.id] || []
-  const lessonResources = resources[currentLesson.id] || []
+  const lessonContent = currentLesson?.content || []
+  const lessonResources = currentLesson?.resources || []
 
   const updateLesson = (newModule: number, newLesson: number) => {
     setSearchParams({
@@ -53,7 +64,7 @@ export default function CourseLearning() {
   }
 
   const goNext = () => {
-    if (lessonIndex < currentModule.lessons.length - 1) {
+    if (lessonIndex < (currentModule?.lessons?.length || 0) - 1) {
       updateLesson(moduleIndex, lessonIndex + 1)
     } else if (moduleIndex < curriculum.length - 1) {
       updateLesson(moduleIndex + 1, 0)
@@ -65,7 +76,7 @@ export default function CourseLearning() {
       updateLesson(moduleIndex, lessonIndex - 1)
     } else if (moduleIndex > 0) {
       const prevModule = curriculum[moduleIndex - 1]
-      updateLesson(moduleIndex - 1, prevModule.lessons.length - 1)
+      updateLesson(moduleIndex - 1, (prevModule?.lessons?.length || 1) - 1)
     }
   }
 
@@ -73,11 +84,47 @@ export default function CourseLearning() {
     updateLesson(moduleIdx, lessonIdx)
   }
 
-  const tabs: { id: Tab label: string icon: typeof BookOpen }[] = [
+  const handleMarkComplete = () => {
+    if (enrollment && currentLesson) {
+      completeLesson.mutate({
+        enrollmentId: enrollment.id,
+        lessonId: currentLesson.id,
+      })
+    }
+  }
+
+  const progress =
+    totalLessons > 0
+      ? Math.round((completedLessons.length / totalLessons) * 100)
+      : 0
+
+  const tabs: { id: Tab; label: string; icon: typeof BookOpen }[] = [
     { id: "lesson", label: "Lesson", icon: BookOpen },
     { id: "notes", label: "Notes", icon: FileText },
     { id: "resources", label: "Resources", icon: Wrench },
   ]
+
+  if (courseLoading || enrollmentLoading) {
+    return (
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{ background: "#060A12" }}
+      >
+        <LoadingSpinner size={32} />
+      </div>
+    )
+  }
+
+  if (!course) {
+    return (
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{ background: "#060A12" }}
+      >
+        <p style={{ color: "#64748B" }}>Course not found</p>
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col h-screen" style={{ background: "#060A12" }}>
@@ -139,6 +186,7 @@ export default function CourseLearning() {
               currentModule={moduleIndex}
               currentLesson={lessonIndex}
               onLessonClick={handleLessonClick}
+              completedLessons={completedLessons}
             />
           </div>
         </aside>
@@ -177,7 +225,7 @@ export default function CourseLearning() {
 
           {/* Tab Content */}
           <div className="flex-1 overflow-y-auto px-6 py-6">
-            {activeTab === "lesson" && (
+            {activeTab === "lesson" && currentLesson && (
               <div className="max-w-3xl mx-auto space-y-6">
                 <div className="flex items-center justify-between">
                   <h1
@@ -187,8 +235,9 @@ export default function CourseLearning() {
                     {currentLesson.title}
                   </h1>
                   <button
-                    onClick={() => toggleLesson(currentLesson.id)}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-all"
+                    onClick={handleMarkComplete}
+                    disabled={isCompleted(currentLesson.id)}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-all disabled:opacity-50"
                     style={{
                       background: isCompleted(currentLesson.id)
                         ? "rgba(16,185,129,0.15)"
@@ -253,7 +302,7 @@ export default function CourseLearning() {
                     onClick={goNext}
                     disabled={
                       moduleIndex === curriculum.length - 1 &&
-                      lessonIndex === currentModule.lessons.length - 1
+                      lessonIndex === (currentModule?.lessons?.length || 1) - 1
                     }
                     className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm transition-all disabled:opacity-40"
                     style={{
@@ -269,9 +318,9 @@ export default function CourseLearning() {
               </div>
             )}
 
-            {activeTab === "notes" && (
+            {activeTab === "notes" && currentLesson && (
               <div className="max-w-3xl mx-auto">
-                <NotesPanel lessonId={currentLesson.id} userId="usr_001" />
+                <NotesPanel lessonId={currentLesson.id} userId="current" />
               </div>
             )}
 

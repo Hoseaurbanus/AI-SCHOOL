@@ -8,14 +8,11 @@ import {
   BookOpen,
   Clock,
   Target,
-  CheckCircle,
-  Star,
-  Zap,
   Play,
 } from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import { useStudentStats, useAIInsights } from "../hooks/useStudentStats"
-import { enrolledCourses, courses } from "../data/mockData"
+import { useMyEnrollments } from "../hooks/useLessonProgress"
 import ProgressRing from "../components/course/ProgressRing"
 import LoadingSpinner from "../components/ui/LoadingSpinner"
 
@@ -79,12 +76,16 @@ export default function StudentDashboard() {
   const navigate = useNavigate()
   const { data: statsData, isLoading: statsLoading } = useStudentStats()
   const { data: insightsData } = useAIInsights()
+  const { data: enrollments = [], isLoading: enrollmentsLoading } =
+    useMyEnrollments()
 
   const stats = statsData?.data
   const insights = insightsData?.data || []
-  const activeEnrollments = enrolledCourses.filter((c) => c.status === "active")
+  const activeEnrollments = enrollments.filter(
+    (e: { status: string }) => e.status === "active"
+  )
 
-  if (statsLoading) {
+  if (statsLoading || enrollmentsLoading) {
     return (
       <div
         className="min-h-screen flex items-center justify-center"
@@ -180,71 +181,84 @@ export default function StudentDashboard() {
             AI Insights
           </h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {insights.map((insight) => {
-              const Icon = iconMap[insight.icon] || Brain
-              return (
-                <div
-                  key={insight.id}
-                  className="p-4 rounded-xl cursor-pointer transition-all hover:scale-[1.02]"
-                  style={{
-                    background: "#0D1421",
-                    border: "1px solid rgba(59,130,246,0.1)",
-                  }}
-                  onClick={() =>
-                    insight.actionPath && navigate(insight.actionPath)
-                  }
-                >
-                  <div className="flex items-start gap-3">
-                    <div
-                      className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-                      style={{
-                        background:
-                          insight.type === "achievement"
-                            ? "rgba(245,158,11,0.12)"
-                            : insight.type === "recommendation"
-                              ? "rgba(59,130,246,0.12)"
-                              : insight.type === "tip"
-                                ? "rgba(16,185,129,0.12)"
-                                : "rgba(139,92,246,0.12)",
-                      }}
-                    >
-                      <Icon
-                        size={18}
+            {insights.map(
+              (insight: {
+                id: string
+                icon: string
+                type: string
+                title: string
+                description: string
+                action?: string
+                actionPath?: string
+              }) => {
+                const Icon = iconMap[insight.icon] || Brain
+                return (
+                  <div
+                    key={insight.id}
+                    className="p-4 rounded-xl cursor-pointer transition-all hover:scale-[1.02]"
+                    style={{
+                      background: "#0D1421",
+                      border: "1px solid rgba(59,130,246,0.1)",
+                    }}
+                    onClick={() =>
+                      insight.actionPath && navigate(insight.actionPath)
+                    }
+                  >
+                    <div className="flex items-start gap-3">
+                      <div
+                        className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
                         style={{
-                          color:
+                          background:
                             insight.type === "achievement"
-                              ? "#F59E0B"
+                              ? "rgba(245,158,11,0.12)"
                               : insight.type === "recommendation"
-                                ? "#3B82F6"
+                                ? "rgba(59,130,246,0.12)"
                                 : insight.type === "tip"
-                                  ? "#10B981"
-                                  : "#8B5CF6",
+                                  ? "rgba(16,185,129,0.12)"
+                                  : "rgba(139,92,246,0.12)",
                         }}
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <h3
-                        className="font-semibold text-sm"
-                        style={{ color: "#F1F5F9" }}
                       >
-                        {insight.title}
-                      </h3>
-                      <p className="text-xs mt-1" style={{ color: "#64748B" }}>
-                        {insight.description}
-                      </p>
-                      {insight.action && (
-                        <span
-                          className="text-xs font-medium mt-2 inline-flex items-center gap-1"
-                          style={{ color: "#3B82F6" }}
+                        <Icon
+                          size={18}
+                          style={{
+                            color:
+                              insight.type === "achievement"
+                                ? "#F59E0B"
+                                : insight.type === "recommendation"
+                                  ? "#3B82F6"
+                                  : insight.type === "tip"
+                                    ? "#10B981"
+                                    : "#8B5CF6",
+                          }}
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <h3
+                          className="font-semibold text-sm"
+                          style={{ color: "#F1F5F9" }}
                         >
-                          {insight.action} <ArrowRight size={10} />
-                        </span>
-                      )}
+                          {insight.title}
+                        </h3>
+                        <p
+                          className="text-xs mt-1"
+                          style={{ color: "#64748B" }}
+                        >
+                          {insight.description}
+                        </p>
+                        {insight.action && (
+                          <span
+                            className="text-xs font-medium mt-2 inline-flex items-center gap-1"
+                            style={{ color: "#3B82F6" }}
+                          >
+                            {insight.action} <ArrowRight size={10} />
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              )
-            })}
+                )
+              }
+            )}
           </div>
         </div>
       )}
@@ -268,11 +282,13 @@ export default function StudentDashboard() {
         </div>
 
         <div className="space-y-4">
-          {activeEnrollments.map((enrollment) => {
-            const course = courses.find((c) => c.id === enrollment.courseId)
-            if (!course) return null
-
-            return (
+          {activeEnrollments.map(
+            (enrollment: {
+              id: string
+              courseId: string
+              progress: number
+              course?: { title: string; thumbnail?: string; instructor?: string }
+            }) => (
               <div
                 key={enrollment.id}
                 className="flex flex-col sm:flex-row gap-4 p-4 rounded-xl cursor-pointer transition-all hover:scale-[1.01]"
@@ -280,11 +296,11 @@ export default function StudentDashboard() {
                   background: "#0D1421",
                   border: "1px solid rgba(59,130,246,0.1)",
                 }}
-                onClick={() => navigate(`/courses/${course.id}/learn`)}
+                onClick={() => navigate(`/courses/${enrollment.courseId}/learn`)}
               >
                 <img
-                  src={course.image}
-                  alt={course.title}
+                  src={enrollment.course?.thumbnail || "/placeholder-course.jpg"}
+                  alt={enrollment.course?.title || "Course"}
                   className="w-full sm:w-40 h-28 rounded-lg object-cover"
                 />
                 <div className="flex-1">
@@ -294,12 +310,13 @@ export default function StudentDashboard() {
                         className="font-bold font-display"
                         style={{ color: "#F1F5F9" }}
                       >
-                        {course.title}
+                        {enrollment.course?.title || "Course"}
                       </h3>
-                      <p className="text-xs mt-1" style={{ color: "#64748B" }}>
-                        {course.instructor} · Module{" "}
-                        {enrollment.currentModule + 1}, Lesson{" "}
-                        {enrollment.currentLesson + 1}
+                      <p
+                        className="text-xs mt-1"
+                        style={{ color: "#64748B" }}
+                      >
+                        {enrollment.course?.instructor || "Instructor"}
                       </p>
                     </div>
                     <ProgressRing
@@ -352,7 +369,7 @@ export default function StudentDashboard() {
                 </div>
               </div>
             )
-          })}
+          )}
 
           {activeEnrollments.length === 0 && (
             <div

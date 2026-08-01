@@ -1,33 +1,78 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useSearchParams } from "react-router-dom"
 import { ArrowLeft, BookOpen, Clock, FileText } from "lucide-react"
 import { useNavigate } from "react-router-dom"
+import { api } from "../lib/api"
 import AssignmentCard from "../components/assignment/AssignmentCard"
 import SubmissionForm from "../components/assignment/SubmissionForm"
 import FeedbackPanel from "../components/assignment/FeedbackPanel"
-import {
-  assignments,
-  assignmentSubmissions,
-  enrolledCourses,
-  courses,
-} from "../data/mockData"
+import LoadingSpinner from "../components/ui/LoadingSpinner"
+import { useMyEnrollments } from "../hooks/useLessonProgress"
+
+interface AssignmentData {
+  id: string
+  courseId: string
+  title: string
+  description: string
+  language: string
+  totalPoints: number
+  dueDate: string
+  requirements: Array<{ text: string; points: number }>
+  starterCode?: string
+}
+
+interface Submission {
+  id: string
+  assignmentId: string
+  studentId: string
+  code: string
+  submittedAt: string
+  score?: number
+  feedback?: string
+  status: "pending" | "reviewed" | "graded"
+}
 
 export default function Assignment() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const assignmentId = searchParams.get("id")
   const [submitted, setSubmitted] = useState(false)
+  const [assignments, setAssignments] = useState<AssignmentData[]>([])
+  const [submissions, setSubmissions] = useState<Submission[]>([])
+  const [loading, setLoading] = useState(true)
 
-  const enrolledIds = enrolledCourses.map((e) => e.courseId)
+  const { data: enrollments = [] } = useMyEnrollments()
+  const enrolledIds = enrollments.map((e: { courseId: string }) => e.courseId)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [assignmentsRes, submissionsRes] = await Promise.all([
+          api.get("/assignments").catch(() => ({ data: [] })),
+          api.get("/assignments/submissions/me").catch(() => ({ data: [] })),
+        ])
+        setAssignments(assignmentsRes.data?.data || assignmentsRes.data || [])
+        setSubmissions(submissionsRes.data?.data || submissionsRes.data || [])
+      } catch {
+        // Use empty arrays if API not available
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchData()
+  }, [])
+
   const enrolledAssignments = assignments.filter((a) =>
-    enrolledIds.includes(a.courseId),
+    enrolledIds.includes(a.courseId)
   )
+
   const assignment = assignmentId
     ? assignments.find((a) => a.id === assignmentId)
     : null
+
   const submission = assignment
-    ? assignmentSubmissions.find(
-        (s) => s.assignmentId === assignment.id && s.studentId === "u1",
+    ? submissions.find(
+        (s) => s.assignmentId === assignment.id
       )
     : null
 
@@ -42,6 +87,17 @@ export default function Assignment() {
 
   const handleSubmit = (_code: string) => {
     setSubmitted(true)
+  }
+
+  if (loading) {
+    return (
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{ background: "#060A12" }}
+      >
+        <LoadingSpinner size={32} />
+      </div>
+    )
   }
 
   if (submitted) {
@@ -121,9 +177,6 @@ export default function Assignment() {
             >
               {assignment.title}
             </h1>
-            <p className="text-base" style={{ color: "#94A3B8" }}>
-              {courses.find((c) => c.id === assignment.courseId)?.title}
-            </p>
           </div>
 
           <div className="flex items-center gap-6 mb-8">

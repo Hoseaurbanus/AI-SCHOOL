@@ -1,31 +1,43 @@
 import { useState } from "react"
 import { ArrowRight, Clock, CheckCircle, BookOpen, Award } from "lucide-react"
 import { useNavigate } from "react-router-dom"
-import { enrolledCourses, courses } from "../data/mockData"
+import { useMyEnrollments } from "../hooks/useLessonProgress"
 import ProgressRing from "../components/course/ProgressRing"
+import LoadingSpinner from "../components/ui/LoadingSpinner"
 
-const tabs = ["All", "Active", "Completed", "Saved"]
+const tabs = ["All", "Active", "Completed"]
 
 export default function MyCourses() {
   const navigate = useNavigate()
   const [tab, setTab] = useState("All")
+  const { data: enrollments = [], isLoading } = useMyEnrollments()
 
   const filtered =
     tab === "All"
-      ? enrolledCourses
+      ? enrollments
       : tab === "Active"
-        ? enrolledCourses.filter((c) => c.status === "active")
-        : tab === "Completed"
-          ? enrolledCourses.filter((c) => c.status === "completed")
-          : enrolledCourses.filter((c) => c.status === "saved")
+        ? enrollments.filter((e: { status: string }) => e.status === "active")
+        : enrollments.filter(
+            (e: { status: string }) => e.status === "completed"
+          )
 
-  const activeCount = enrolledCourses.filter(
-    (c) => c.status === "active",
+  const activeCount = enrollments.filter(
+    (e: { status: string }) => e.status === "active"
   ).length
-  const completedCount = enrolledCourses.filter(
-    (c) => c.status === "completed",
+  const completedCount = enrollments.filter(
+    (e: { status: string }) => e.status === "completed"
   ).length
-  const certCount = completedCount
+
+  if (isLoading) {
+    return (
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{ background: "#060A12" }}
+      >
+        <LoadingSpinner size={32} />
+      </div>
+    )
+  }
 
   return (
     <div
@@ -61,7 +73,7 @@ export default function MyCourses() {
           },
           {
             icon: Award,
-            v: certCount.toString(),
+            v: completedCount.toString(),
             l: "Certificates",
             color: "#F59E0B",
           },
@@ -107,11 +119,14 @@ export default function MyCourses() {
 
       {/* Course list */}
       <div className="space-y-4">
-        {filtered.map((enrollment) => {
-          const course = courses.find((c) => c.id === enrollment.courseId)
-          if (!course) return null
-
-          return (
+        {filtered.map(
+          (enrollment: {
+            id: string
+            courseId: string
+            progress: number
+            status: string
+            course?: { title: string; thumbnail?: string; instructor?: string; category?: string }
+          }) => (
             <div
               key={enrollment.id}
               className="flex flex-col sm:flex-row gap-4 p-4 rounded-xl cursor-pointer transition-all hover:scale-[1.01]"
@@ -119,11 +134,11 @@ export default function MyCourses() {
                 background: "#0D1421",
                 border: "1px solid rgba(59,130,246,0.1)",
               }}
-              onClick={() => navigate(`/courses/${course.id}/learn`)}
+              onClick={() => navigate(`/courses/${enrollment.courseId}/learn`)}
             >
               <img
-                src={course.image}
-                alt={course.title}
+                src={enrollment.course?.thumbnail || "/placeholder-course.jpg"}
+                alt={enrollment.course?.title || "Course"}
                 className="w-full sm:w-40 h-28 rounded-lg object-cover"
               />
               <div className="flex-1">
@@ -133,10 +148,11 @@ export default function MyCourses() {
                       className="font-bold font-display"
                       style={{ color: "#F1F5F9" }}
                     >
-                      {course.title}
+                      {enrollment.course?.title || "Course"}
                     </h3>
                     <p className="text-xs mt-1" style={{ color: "#64748B" }}>
-                      {course.instructor} · {course.category}
+                      {enrollment.course?.instructor || "Instructor"} ·{" "}
+                      {enrollment.course?.category || "Category"}
                     </p>
                   </div>
                   <ProgressRing
@@ -152,10 +168,7 @@ export default function MyCourses() {
                     style={{ color: "#64748B" }}
                   >
                     <Clock size={12} />
-                    <span>
-                      Module {enrollment.currentModule + 1}, Lesson{" "}
-                      {enrollment.currentLesson + 1}
-                    </span>
+                    <span>{Math.round(enrollment.progress)}% complete</span>
                   </div>
                   <div
                     className="px-2 py-0.5 rounded-full text-xs font-medium"
@@ -163,22 +176,16 @@ export default function MyCourses() {
                       background:
                         enrollment.status === "active"
                           ? "rgba(59,130,246,0.12)"
-                          : enrollment.status === "completed"
-                            ? "rgba(16,185,129,0.12)"
-                            : "rgba(245,158,11,0.12)",
+                          : "rgba(16,185,129,0.12)",
                       color:
                         enrollment.status === "active"
                           ? "#3B82F6"
-                          : enrollment.status === "completed"
-                            ? "#10B981"
-                            : "#F59E0B",
+                          : "#10B981",
                     }}
                   >
                     {enrollment.status === "active"
                       ? "In Progress"
-                      : enrollment.status === "completed"
-                        ? "Completed"
-                        : "Saved"}
+                      : "Completed"}
                   </div>
                 </div>
 
@@ -209,7 +216,7 @@ export default function MyCourses() {
               />
             </div>
           )
-        })}
+        )}
 
         {filtered.length === 0 && (
           <div className="text-center py-16">

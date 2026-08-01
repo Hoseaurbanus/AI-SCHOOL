@@ -1,51 +1,62 @@
-import { useState, useEffect, useCallback } from "react"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import {
+  enrollmentService,
+  type Enrollment,
+  type EnrollmentDetail,
+} from "../services/enrollmentService"
 
-const STORAGE_KEY = "smugflex_lesson_progress"
-
-function getStoredProgress(): Record<string, string[]> {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY)
-    return stored ? JSON.parse(stored) : {}
-  } catch {
-    return {}
-  }
-}
-
-function saveProgress(progress: Record<string, string[]>) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(progress))
-}
-
-export function useLessonProgress(courseId: string, totalLessons: number) {
-  const [completedLessons, setCompletedLessons] = useState<string[]>(() => {
-    const progress = getStoredProgress()
-    return progress[courseId] || []
+export function useMyEnrollments() {
+  return useQuery({
+    queryKey: ["enrollments", "me"],
+    queryFn: () => enrollmentService.getMyEnrollments(),
+    staleTime: 2 * 60 * 1000,
   })
+}
 
-  useEffect(() => {
-    const progress = getStoredProgress()
-    progress[courseId] = completedLessons
-    saveProgress(progress)
-  }, [courseId, completedLessons])
+export function useEnrollment(id: string) {
+  return useQuery({
+    queryKey: ["enrollments", id],
+    queryFn: () => enrollmentService.getEnrollment(id),
+    enabled: !!id,
+    staleTime: 60 * 1000,
+  })
+}
 
-  const toggleLesson = useCallback((lessonId: string) => {
-    setCompletedLessons((prev) =>
-      prev.includes(lessonId)
-        ? prev.filter((id) => id !== lessonId)
-        : [...prev, lessonId],
-    )
-  }, [])
+export function useCompleteLesson() {
+  const queryClient = useQueryClient()
 
-  const isCompleted = useCallback(
-    (lessonId: string) => {
-      return completedLessons.includes(lessonId)
+  return useMutation({
+    mutationFn: ({
+      enrollmentId,
+      lessonId,
+    }: {
+      enrollmentId: string
+      lessonId: string
+    }) => enrollmentService.completeLesson(enrollmentId, lessonId),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["enrollments", variables.enrollmentId],
+      })
+      queryClient.invalidateQueries({ queryKey: ["enrollments", "me"] })
     },
-    [completedLessons],
-  )
+  })
+}
 
-  const progress =
-    totalLessons > 0
-      ? Math.round((completedLessons.length / totalLessons) * 100)
-      : 0
+export function useUpdateProgress() {
+  const queryClient = useQueryClient()
 
-  return { completedLessons, toggleLesson, isCompleted, progress }
+  return useMutation({
+    mutationFn: ({
+      enrollmentId,
+      progress,
+    }: {
+      enrollmentId: string
+      progress: Record<string, unknown>
+    }) => enrollmentService.updateProgress(enrollmentId, progress),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["enrollments", variables.enrollmentId],
+      })
+    },
+  })
 }

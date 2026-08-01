@@ -1,53 +1,113 @@
 import { useState } from "react"
 import { ChevronLeft, ChevronRight, Send, BookOpen } from "lucide-react"
-import { assessments } from "../data/mockData"
-import { useAssessment } from "../hooks/useAssessment"
+import {
+  useAssessments,
+  useStartAssessment,
+  useSubmitAssessment,
+} from "../hooks/useAssessment"
+import { useCourse } from "../hooks/useCourses"
+import { useSearchParams } from "react-router-dom"
 import QuestionCard from "../components/assessment/QuestionCard"
 import QuizProgress from "../components/assessment/QuizProgress"
 import ResultSummary from "../components/assessment/ResultSummary"
 import ConfirmDialog from "../components/admin/ConfirmDialog"
-import type { Assessment } from "../types"
+import LoadingSpinner from "../components/ui/LoadingSpinner"
+import type { Assessment as AssessmentType } from "../services/assessmentService"
 
 export default function Assessment() {
-  const [selectedAssessment, setSelectedAssessment] = useState(assessments[0])
+  const [searchParams] = useSearchParams()
+  const courseId = searchParams.get("courseId") || ""
+
+  const { data: assessments = [], isLoading: assessmentsLoading } =
+    useAssessments(courseId ? { courseId } : undefined)
+
+  const [selectedAssessmentId, setSelectedAssessmentId] = useState<string>("")
   const [quizKey, setQuizKey] = useState(0)
   const [showSubmitConfirm, setShowSubmitConfirm] = useState(false)
 
-  const assessment = selectedAssessment
-  const {
-    currentQuestion,
-    currentIndex,
-    answers,
-    setAnswer,
-    goNext,
-    goPrev,
-    goToQuestion,
-    submit,
-    result,
-    timeRemaining,
-    isSubmitted,
-    totalQuestions,
-  } = useAssessment(assessment)
+  const selectedAssessment = assessments.find(
+    (a: AssessmentType) => a.id === selectedAssessmentId
+  )
+
+  const startAssessment = useStartAssessment()
+  const submitAssessment = useSubmitAssessment()
+
+  const [answers, setAnswers] = useState<Record<string, string>>({})
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [result, setResult] = useState<Record<string, unknown> | null>(null)
+  const [timeRemaining, setTimeRemaining] = useState(0)
+
+  const currentQuestion = selectedAssessment?.questions?.[currentIndex]
+  const totalQuestions = selectedAssessment?.questions?.length || 0
+
+  const handleStart = async (id: string) => {
+    try {
+      await startAssessment.mutateAsync(id)
+      setSelectedAssessmentId(id)
+      setQuizKey((prev) => prev + 1)
+      setAnswers({})
+      setCurrentIndex(0)
+      setResult(null)
+    } catch {
+      // Error handled by mutation
+    }
+  }
 
   const handleSubmit = () => {
     setShowSubmitConfirm(true)
   }
 
-  const confirmSubmit = () => {
-    submit()
-    setShowSubmitConfirm(false)
+  const confirmSubmit = async () => {
+    if (!selectedAssessment) return
+    try {
+      const response = await submitAssessment.mutateAsync({
+        id: selectedAssessment.id,
+        answers,
+      })
+      setResult(response)
+      setShowSubmitConfirm(false)
+    } catch {
+      setShowSubmitConfirm(false)
+    }
   }
 
   const handleRetry = () => {
-    setQuizKey((prev) => prev + 1)
+    if (selectedAssessmentId) {
+      handleStart(selectedAssessmentId)
+    }
   }
 
-  const handleAssessmentChange = (id: string) => {
-    const found = assessments.find((a) => a.id === id)
-    if (found) {
-      setSelectedAssessment(found)
-      setQuizKey((prev) => prev + 1)
+  const setAnswer = (questionId: string, value: string) => {
+    setAnswers((prev) => ({ ...prev, [questionId]: value }))
+  }
+
+  const goNext = () => {
+    if (currentIndex < totalQuestions - 1) {
+      setCurrentIndex((prev) => prev + 1)
     }
+  }
+
+  const goPrev = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex((prev) => prev - 1)
+    }
+  }
+
+  const goToQuestion = (index: number) => {
+    setCurrentIndex(index)
+  }
+
+  const isSubmitted = !!result
+
+  if (assessmentsLoading) {
+    return (
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{ background: "#060A12" }}
+      >
+        <LoadingSpinner size={32} />
+      </div>
+    )
   }
 
   return (
@@ -77,8 +137,8 @@ export default function Assessment() {
 
           {!isSubmitted && (
             <select
-              value={selectedAssessment.id}
-              onChange={(e) => handleAssessmentChange(e.target.value)}
+              value={selectedAssessmentId}
+              onChange={(e) => handleStart(e.target.value)}
               className="px-3 py-2 rounded-lg text-sm"
               style={{
                 background: "#0D1421",
@@ -86,7 +146,8 @@ export default function Assessment() {
                 border: "1px solid rgba(59,130,246,0.2)",
               }}
             >
-              {assessments.map((a) => (
+              <option value="">Select assessment</option>
+              {assessments.map((a: AssessmentType) => (
                 <option key={a.id} value={a.id}>
                   {a.title}
                 </option>
@@ -95,10 +156,27 @@ export default function Assessment() {
           )}
         </div>
 
-        {isSubmitted && result ? (
+        {!selectedAssessment ? (
+          <div
+            className="text-center py-16 rounded-xl"
+            style={{
+              background: "#0D1421",
+              border: "1px solid rgba(59,130,246,0.1)",
+            }}
+          >
+            <BookOpen
+              size={48}
+              className="mx-auto mb-4"
+              style={{ color: "#475569" }}
+            />
+            <p className="text-lg" style={{ color: "#64748B" }}>
+              Select an assessment to begin
+            </p>
+          </div>
+        ) : isSubmitted && result ? (
           <ResultSummary
             result={result}
-            assessment={assessment}
+            assessment={selectedAssessment}
             onRetry={handleRetry}
           />
         ) : (
@@ -111,49 +189,57 @@ export default function Assessment() {
             />
 
             {/* Question */}
-            <div
-              className="p-6 rounded-2xl"
-              style={{
-                background: "#0D1421",
-                border: "1px solid rgba(59,130,246,0.1)",
-              }}
-            >
-              <QuestionCard
-                key={`${quizKey}-${currentIndex}`}
-                question={currentQuestion}
-                selectedAnswers={answers[currentQuestion.id] || []}
-                onAnswer={(ids) => setAnswer(currentQuestion.id, ids)}
-              />
-            </div>
+            {currentQuestion && (
+              <div
+                className="p-6 rounded-2xl"
+                style={{
+                  background: "#0D1421",
+                  border: "1px solid rgba(59,130,246,0.1)",
+                }}
+              >
+                <QuestionCard
+                  key={`${quizKey}-${currentIndex}`}
+                  question={currentQuestion}
+                  selectedAnswers={answers[currentQuestion.id] || ""}
+                  onAnswer={(value: string) =>
+                    setAnswer(currentQuestion.id, value)
+                  }
+                />
+              </div>
+            )}
 
             {/* Question Grid */}
             <div className="flex flex-wrap gap-2">
-              {assessment.questions.map((q, i) => (
-                <button
-                  key={q.id}
-                  onClick={() => goToQuestion(i)}
-                  className="w-8 h-8 rounded-lg text-xs font-medium transition-all"
-                  style={{
-                    background:
-                      i === currentIndex
-                        ? "#3B82F6"
-                        : answers[q.id]?.length
-                          ? "rgba(59,130,246,0.15)"
-                          : "#0D1421",
-                    color:
-                      i === currentIndex
-                        ? "#FFFFFF"
-                        : answers[q.id]?.length
+              {selectedAssessment.questions?.map(
+                (q: { id: string }, i: number) => (
+                  <button
+                    key={q.id}
+                    onClick={() => goToQuestion(i)}
+                    className="w-8 h-8 rounded-lg text-xs font-medium transition-all"
+                    style={{
+                      background:
+                        i === currentIndex
                           ? "#3B82F6"
-                          : "#64748B",
-                    border: `1px solid ${
-                      i === currentIndex ? "#3B82F6" : "rgba(59,130,246,0.1)"
-                    }`,
-                  }}
-                >
-                  {i + 1}
-                </button>
-              ))}
+                          : answers[q.id]
+                            ? "rgba(59,130,246,0.15)"
+                            : "#0D1421",
+                      color:
+                        i === currentIndex
+                          ? "#FFFFFF"
+                          : answers[q.id]
+                            ? "#3B82F6"
+                            : "#64748B",
+                      border: `1px solid ${
+                        i === currentIndex
+                          ? "#3B82F6"
+                          : "rgba(59,130,246,0.1)"
+                      }`,
+                    }}
+                  >
+                    {i + 1}
+                  </button>
+                )
+              )}
             </div>
 
             {/* Navigation */}
