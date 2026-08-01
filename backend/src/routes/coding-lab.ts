@@ -30,11 +30,7 @@ type WebContext = {
 }
 
 // Execute HTML/CSS/JS
-function executeWebCode(
-  code: string,
-  language: string,
-  context?: WebContext,
-) {
+function executeWebCode(code: string, language: string, context?: WebContext) {
   if (language === "html") {
     return {
       output: code,

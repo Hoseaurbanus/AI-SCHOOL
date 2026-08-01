@@ -12,6 +12,7 @@ import { memoryRoutes } from "./memory.js"
 import { promptRoutes } from "./prompts.js"
 import { codingLabRoutes } from "./coding-lab.js"
 import { recommendationRoutes } from "./recommendations.js"
+import { analyticsRoutes } from "./analytics.js"
 
 export async function routes(app: FastifyInstance) {
   // Health check
@@ -37,4 +38,5 @@ export async function routes(app: FastifyInstance) {
   await app.register(promptRoutes, { prefix: "/prompts" })
   await app.register(codingLabRoutes, { prefix: "/coding" })
   await app.register(recommendationRoutes, { prefix: "/recommendations" })
+  await app.register(analyticsRoutes, { prefix: "/analytics" })
 }
