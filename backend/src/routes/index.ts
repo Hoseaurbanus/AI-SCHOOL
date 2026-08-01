@@ -7,6 +7,9 @@ import { assessmentRoutes } from "./assessments.js"
 import { submissionRoutes } from "./submissions.js"
 import { certificateRoutes } from "./certificates.js"
 import { paymentRoutes } from "./payments.js"
+import { ragRoutes } from "./rag.js"
+import { memoryRoutes } from "./memory.js"
+import { promptRoutes } from "./prompts.js"
 
 export async function routes(app: FastifyInstance) {
   // Health check
@@ -27,4 +30,7 @@ export async function routes(app: FastifyInstance) {
   await app.register(submissionRoutes, { prefix: "/submissions" })
   await app.register(certificateRoutes, { prefix: "/certificates" })
   await app.register(paymentRoutes, { prefix: "/payments" })
+  await app.register(ragRoutes, { prefix: "/knowledge" })
+  await app.register(memoryRoutes, { prefix: "/memory" })
+  await app.register(promptRoutes, { prefix: "/prompts" })
 }

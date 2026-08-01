@@ -5,10 +5,15 @@ import { logger } from "../lib/logger.js"
 // Clerk client (using fetch API directly)
 const clerkSecretKey = config.clerkSecretKey
 
+type ClerkTokenResult = {
+  sub: string
+  sid?: string
+}
+
 declare module "fastify" {
   interface FastifyInstance {
     clerk: {
-      verifyToken: (token: string) => Promise<{ sub: string sid?: string }>
+      verifyToken: (token: string) => Promise<ClerkTokenResult>
     }
   }
 
@@ -22,10 +27,7 @@ declare module "fastify" {
 export async function authPlugin(app: FastifyInstance) {
   // Initialize Clerk client
   app.decorate("clerk", {
-    verifyToken: async (token: string): Promise<{
-      sub: string
-      sid?: string
-    }> => {
+    verifyToken: async (token: string): Promise<ClerkTokenResult> => {
       const response = await fetch("https://api.clerk.com/v1/tokens/verify", {
         method: "POST",
         headers: {
@@ -39,7 +41,7 @@ export async function authPlugin(app: FastifyInstance) {
         throw new Error("Invalid token")
       }
 
-      const data = (await response.json()) as { sub: string sid?: string }
+      const data = (await response.json()) as ClerkTokenResult
       return data
     },
   })
@@ -94,14 +96,14 @@ export async function authPlugin(app: FastifyInstance) {
     },
   )
 
-  logger.info("✅ Auth plugin registered")
+  logger.info("Auth plugin registered")
 }
 
 // Extend Fastify types
 declare module "fastify" {
   interface FastifyInstance {
     clerk: {
-      verifyToken: (token: string) => Promise<{ sub: string sid?: string }>
+      verifyToken: (token: string) => Promise<ClerkTokenResult>
     }
     authenticate: (
       request: FastifyRequest,
