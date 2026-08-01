@@ -1,12 +1,16 @@
 import Fastify from "fastify"
 import cors from "@fastify/cors"
-import rateLimit from "@fastify/rate-limit"
+import { sql } from "drizzle-orm"
 import { logger } from "./lib/logger.js"
 import { config } from "./lib/config.js"
 import { authPlugin } from "./plugins/auth.js"
 import { dbPlugin } from "./plugins/db.js"
 import { redisPlugin } from "./plugins/redis.js"
 import { aiPlugin } from "./plugins/ai.js"
+import { cachePlugin } from "./plugins/cache.js"
+import { rateLimitPlugin } from "./plugins/rate-limit.js"
+import { costTrackingPlugin } from "./plugins/cost-tracking.js"
+import { securityPlugin } from "./plugins/security.js"
 import { routes } from "./routes/index.js"
 
 export async function createApp() {
@@ -22,6 +26,7 @@ export async function createApp() {
           : undefined,
     },
     bodyLimit: 10 * 1024 * 1024, // 10MB
+    trustProxy: true,
   })
 
   // CORS
@@ -30,21 +35,61 @@ export async function createApp() {
     credentials: true,
   })
 
-  // Rate limiting
-  await app.register(rateLimit, {
-    max: config.rateLimitMaxRequests,
-    timeWindow: config.rateLimitWindowMs,
-  })
-
-  // Plugins
+  // Core plugins
   await app.register(dbPlugin)
   await app.register(redisPlugin)
   await app.register(authPlugin)
   await app.register(aiPlugin)
 
+  // Scale & Optimize plugins
+  await app.register(cachePlugin)
+  await app.register(rateLimitPlugin)
+  await app.register(costTrackingPlugin)
+  await app.register(securityPlugin)
+
   // Health check
   app.get("/health", async () => {
-    return { status: "ok", timestamp: new Date().toISOString() }
+    let dbHealthy = false
+    try {
+      await app.db.execute(sql`SELECT 1`)
+      dbHealthy = true
+    } catch {
+      dbHealthy = false
+    }
+
+    let redisHealthy = false
+    if (app.redis) {
+      try {
+        await app.redis.ping()
+        redisHealthy = true
+      } catch {
+        redisHealthy = false
+      }
+    }
+
+    return {
+      status: dbHealthy ? "ok" : "degraded",
+      timestamp: new Date().toISOString(),
+      services: {
+        database: dbHealthy ? "healthy" : "unhealthy",
+        redis: app.redis
+          ? redisHealthy
+            ? "healthy"
+            : "unhealthy"
+          : "not configured",
+      },
+    }
+  })
+
+  // Readiness check
+  app.get("/ready", async (request, reply) => {
+    try {
+      await app.db.execute(sql`SELECT 1`)
+      return { status: "ready" }
+    } catch {
+      reply.status(503)
+      return { status: "not ready" }
+    }
   })
 
   // API routes
