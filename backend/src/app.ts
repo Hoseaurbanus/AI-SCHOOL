@@ -31,7 +31,7 @@ export async function createApp() {
 
   // CORS
   await app.register(cors, {
-    origin: config.corsOrigin,
+    origin: config.corsOrigin.split(","),
     credentials: true,
   })
 
