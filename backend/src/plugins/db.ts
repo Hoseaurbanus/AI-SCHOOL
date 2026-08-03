@@ -1,4 +1,4 @@
-import { drizzle } from "drizzle-orm/node-postgres"
+import { drizzle } from "drizzle-orm/postgres-js"
 import postgres from "postgres"
 import { FastifyInstance } from "fastify"
 import { config } from "../lib/config.js"
