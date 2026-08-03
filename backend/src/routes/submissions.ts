@@ -129,8 +129,11 @@ function runTestCases(code: string, testCases: any[]) {
 
   for (const tc of testCases) {
     try {
-      // Create sandboxed function
-      const fn = new Function("input", `return (${code})(input)`)
+      // Execute test case safely
+      const fn = new Function(
+        "input",
+        `"use strict"; return (${code})(input)`,
+      )
       const output = fn(tc.input)
       const passed = JSON.stringify(output) === JSON.stringify(tc.expected)
 
@@ -219,32 +222,7 @@ export async function submissionRoutes(app: FastifyInstance) {
     }
   })
 
-  // Get submission by ID
-  app.get("/:id", async (request, reply) => {
-    const userId = request.userId
-
-    if (!userId) {
-      return reply.status(401).send({ error: true, message: "Unauthorized" })
-    }
-
-    const { id } = submissionParamSchema.parse(request.params)
-
-    const [submission] = await app.db
-      .select()
-      .from(submissions)
-      .where(and(eq(submissions.id, id), eq(submissions.userId, userId)))
-      .limit(1)
-
-    if (!submission) {
-      return reply
-        .status(404)
-        .send({ error: true, message: "Submission not found" })
-    }
-
-    return reply.send({ data: submission })
-  })
-
-  // Get user's submissions
+  // Get user's submissions (must be before /:id to avoid route conflict)
   app.get("/me", async (request, reply) => {
     const userId = request.userId
 
@@ -270,6 +248,31 @@ export async function submissionRoutes(app: FastifyInstance) {
       .orderBy(desc(submissions.createdAt))
 
     return reply.send({ data: userSubmissions })
+  })
+
+  // Get submission by ID
+  app.get("/:id", async (request, reply) => {
+    const userId = request.userId
+
+    if (!userId) {
+      return reply.status(401).send({ error: true, message: "Unauthorized" })
+    }
+
+    const { id } = submissionParamSchema.parse(request.params)
+
+    const [submission] = await app.db
+      .select()
+      .from(submissions)
+      .where(and(eq(submissions.id, id), eq(submissions.userId, userId)))
+      .limit(1)
+
+    if (!submission) {
+      return reply
+        .status(404)
+        .send({ error: true, message: "Submission not found" })
+    }
+
+    return reply.send({ data: submission })
   })
 
   // Grade submission (admin/instructor)

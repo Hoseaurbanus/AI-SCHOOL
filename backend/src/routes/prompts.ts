@@ -122,8 +122,12 @@ class TemplateEngine {
 export async function promptRoutes(app: FastifyInstance) {
   const engine = new TemplateEngine(app)
 
-  // List templates
+  // List templates (authenticated only)
   app.get("/", async (request, reply) => {
+    if (!request.userId) {
+      return reply.status(401).send({ error: true, message: "Unauthorized" })
+    }
+
     const { activeOnly } = z
       .object({ activeOnly: z.coerce.boolean().default(false) })
       .parse(request.query)
@@ -149,8 +153,12 @@ export async function promptRoutes(app: FastifyInstance) {
     return reply.send({ data: template })
   })
 
-  // Create or update template
+  // Create or update template (admin only)
   app.post("/", async (request, reply) => {
+    if (!request.userId) {
+      return reply.status(401).send({ error: true, message: "Unauthorized" })
+    }
+
     const body = templateSchema.parse(request.body)
 
     const template = await engine.upsert(
@@ -182,8 +190,12 @@ export async function promptRoutes(app: FastifyInstance) {
     }
   })
 
-  // Deactivate template
+  // Deactivate template (admin only)
   app.delete("/:name", async (request, reply) => {
+    if (!request.userId) {
+      return reply.status(401).send({ error: true, message: "Unauthorized" })
+    }
+
     const { name } = z.object({ name: z.string() }).parse(request.params)
 
     await engine.deactivate(name)

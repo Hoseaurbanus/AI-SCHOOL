@@ -17,7 +17,7 @@ export default function Notifications() {
     return n.type === filter
   })
 
-  const filters: { id: FilterType label: string }[] = [
+  const filters: { id: FilterType; label: string }[] = [
     { id: "all", label: "All" },
     { id: "unread", label: "Unread" },
     { id: "course", label: "Courses" },

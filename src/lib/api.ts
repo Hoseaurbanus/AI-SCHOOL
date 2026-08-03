@@ -1,5 +1,4 @@
 import axios from "axios"
-import { useAuth as useClerkAuth } from "@clerk/clerk-react"
 
 const API_BASE_URL =
   import.meta.env.VITE_API_URL || "http://localhost:3001/api/v1"
@@ -39,10 +38,8 @@ export const clearAuthToken = () => {
 }
 
 export function useApi() {
-  const { getToken } = useClerkAuth()
-
   const getAuthHeaders = async () => {
-    const token = await getToken()
+    const token = localStorage.getItem("clerk_session_token")
     return token ? { Authorization: `Bearer ${token}` } : {}
   }
 

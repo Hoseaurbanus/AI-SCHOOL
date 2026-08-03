@@ -25,7 +25,7 @@ import {
 import CourseCard from "../components/course/CourseCard"
 import { useFeaturedCourses } from "../hooks/useCourses"
 
-function StatBadge({ value, label }: { value: string label: string }) {
+function StatBadge({ value, label }: { value: string; label: string }) {
   return (
     <div
       className="flex flex-col items-center px-4 py-3 rounded-xl"

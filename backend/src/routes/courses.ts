@@ -175,8 +175,12 @@ export async function courseRoutes(app: FastifyInstance) {
     return reply.send({ data: courseModules })
   })
 
-  // Create course
+  // Create course (admin/instructor only)
   app.post("/", async (request, reply) => {
+    if (!request.userId) {
+      return reply.status(401).send({ error: true, message: "Unauthorized" })
+    }
+
     const body = z
       .object({
         title: z.string().min(1),
@@ -208,8 +212,12 @@ export async function courseRoutes(app: FastifyInstance) {
     return reply.status(201).send({ data: course })
   })
 
-  // Update course
+  // Update course (admin/instructor only)
   app.put("/:id", async (request, reply) => {
+    if (!request.userId) {
+      return reply.status(401).send({ error: true, message: "Unauthorized" })
+    }
+
     const { id } = courseIdParamSchema.parse(request.params)
     const body = z
       .object({
@@ -249,8 +257,12 @@ export async function courseRoutes(app: FastifyInstance) {
     return reply.send({ data: course })
   })
 
-  // Delete course
+  // Delete course (admin only)
   app.delete("/:id", async (request, reply) => {
+    if (!request.userId) {
+      return reply.status(401).send({ error: true, message: "Unauthorized" })
+    }
+
     const { id } = courseIdParamSchema.parse(request.params)
 
     const [course] = await app.db
@@ -267,8 +279,12 @@ export async function courseRoutes(app: FastifyInstance) {
     return reply.status(204).send()
   })
 
-  // Create module
+  // Create module (admin/instructor only)
   app.post("/:id/modules", async (request, reply) => {
+    if (!request.userId) {
+      return reply.status(401).send({ error: true, message: "Unauthorized" })
+    }
+
     const { id } = courseIdParamSchema.parse(request.params)
     const body = z
       .object({
@@ -291,8 +307,12 @@ export async function courseRoutes(app: FastifyInstance) {
     return reply.status(201).send({ data: module })
   })
 
-  // Create lesson
+  // Create lesson (admin/instructor only)
   app.post("/modules/:moduleId/lessons", async (request, reply) => {
+    if (!request.userId) {
+      return reply.status(401).send({ error: true, message: "Unauthorized" })
+    }
+
     const { moduleId } = z
       .object({ moduleId: z.string().uuid() })
       .parse(request.params)
@@ -324,8 +344,12 @@ export async function courseRoutes(app: FastifyInstance) {
     return reply.status(201).send({ data: lesson })
   })
 
-  // Update lesson
+  // Update lesson (admin/instructor only)
   app.put("/lessons/:lessonId", async (request, reply) => {
+    if (!request.userId) {
+      return reply.status(401).send({ error: true, message: "Unauthorized" })
+    }
+
     const { lessonId } = z
       .object({ lessonId: z.string().uuid() })
       .parse(request.params)

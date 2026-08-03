@@ -222,6 +222,50 @@ export async function memoryRoutes(app: FastifyInstance) {
     return reply.status(201).send({ data: memory })
   })
 
+  // Get recent memories (must be before /:category to avoid route conflict)
+  app.get("/recent/all", async (request, reply) => {
+    const userId = request.userId
+
+    if (!userId) {
+      return reply.status(401).send({ error: true, message: "Unauthorized" })
+    }
+
+    const { limit } = z
+      .object({ limit: z.coerce.number().min(1).max(50).default(10) })
+      .parse(request.query)
+
+    const memories = await memoryManager.getRecent(userId, limit)
+
+    return reply.send({ data: memories })
+  })
+
+  // Get summary for AI context (must be before /:category to avoid route conflict)
+  app.get("/summary/context", async (request, reply) => {
+    const userId = request.userId
+
+    if (!userId) {
+      return reply.status(401).send({ error: true, message: "Unauthorized" })
+    }
+
+    const { contextWindow } = z
+      .object({ contextWindow: z.coerce.number().min(1).max(100).default(10) })
+      .parse(request.query)
+
+    const summary = await memoryManager.getSummaryForContext(userId, contextWindow)
+
+    return reply.send({ data: summary })
+  })
+
+  // Clean expired memories (admin only, must be before /:category)
+  app.delete("/clean/expired", async (request, reply) => {
+    if (!request.userId) {
+      return reply.status(401).send({ error: true, message: "Unauthorized" })
+    }
+
+    const result = await memoryManager.cleanExpired()
+    return reply.send({ data: { cleaned: true } })
+  })
+
   // Get memory by category
   app.get("/:category", async (request, reply) => {
     const userId = request.userId
@@ -263,37 +307,7 @@ export async function memoryRoutes(app: FastifyInstance) {
     return reply.send({ data: memory })
   })
 
-  // Get recent memories
-  app.get("/recent/all", async (request, reply) => {
-    const userId = request.userId
-
-    if (!userId) {
-      return reply.status(401).send({ error: true, message: "Unauthorized" })
-    }
-
-    const { limit } = z
-      .object({ limit: z.coerce.number().min(1).max(50).default(10) })
-      .parse(request.query)
-
-    const memories = await memoryManager.getRecent(userId, limit)
-
-    return reply.send({ data: memories })
-  })
-
-  // Get summary for AI context
-  app.get("/summary/context", async (request, reply) => {
-    const userId = request.userId
-
-    if (!userId) {
-      return reply.status(401).send({ error: true, message: "Unauthorized" })
-    }
-
-    const summary = await memoryManager.summarize(userId)
-
-    return reply.send({ data: { summary } })
-  })
-
-  // Delete memory
+  // Delete memory by category and key
   app.delete("/:category/:key", async (request, reply) => {
     const userId = request.userId
 
@@ -311,11 +325,5 @@ export async function memoryRoutes(app: FastifyInstance) {
     await memoryManager.delete(userId, category, key)
 
     return reply.status(204).send()
-  })
-
-  // Clean expired memories (admin)
-  app.delete("/clean/expired", async (request, reply) => {
-    const result = await memoryManager.cleanExpired()
-    return reply.send({ data: { cleaned: true } })
   })
 }

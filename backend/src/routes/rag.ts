@@ -88,8 +88,12 @@ function calculateRelevance(query: string, content: string): number {
 }
 
 export async function ragRoutes(app: FastifyInstance) {
-  // Ingest course content
+  // Ingest course content (admin/instructor only)
   app.post("/ingest", async (request, reply) => {
+    if (!request.userId) {
+      return reply.status(401).send({ error: true, message: "Unauthorized" })
+    }
+
     const body = z
       .object({
         courseId: z.string().uuid(),

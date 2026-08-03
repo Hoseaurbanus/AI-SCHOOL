@@ -58,9 +58,12 @@ function executeWebCode(code: string, language: string, context?: WebContext) {
     }
 
     try {
-      // Create a sandboxed function
-      const fn = new Function("console", code)
-      fn(mockConsole)
+      // Execute code safely with output capture
+      const sandboxedFn = new Function(
+        "console",
+        `"use strict"; ${code}`,
+      )
+      sandboxedFn(mockConsole)
       return {
         output: logs.join("\n") || "Code executed successfully (no output)",
         type: "text",

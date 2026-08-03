@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom"
 import { useAdminStats, useAdminTransactions } from "../hooks/useAdmin"
 import StatsCard from "../components/admin/StatsCard"
 
-function MiniBarChart({ data, color }: { data: number[] color: string }) {
+function MiniBarChart({ data, color }: { data: number[]; color: string }) {
   const max = Math.max(...data)
   return (
     <div className="flex items-end gap-1 h-16">

@@ -21,7 +21,7 @@ type Tab = "lesson" | "notes" | "resources"
 
 export default function CourseLearning() {
   const navigate = useNavigate()
-  const { courseId: urlCourseId } = useParams()
+  const { id: urlCourseId } = useParams<{ id: string }>()
   const [searchParams, setSearchParams] = useSearchParams()
 
   const courseId = urlCourseId || searchParams.get("courseId") || ""

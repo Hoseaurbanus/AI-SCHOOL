@@ -65,6 +65,87 @@ export async function assessmentRoutes(app: FastifyInstance) {
     return reply.send({ data: result })
   })
 
+  // Get user's results (must be before /:id to avoid route conflict)
+  app.get("/me/results", async (request, reply) => {
+    const userId = request.userId
+
+    if (!userId) {
+      return reply.status(401).send({ error: true, message: "Unauthorized" })
+    }
+
+    const results = await app.db
+      .select({
+        id: assessmentResults.id,
+        assessmentId: assessmentResults.assessmentId,
+        score: assessmentResults.score,
+        passed: assessmentResults.passed,
+        timeTaken: assessmentResults.timeTaken,
+        completedAt: assessmentResults.completedAt,
+        assessmentTitle: assessments.title,
+        courseTitle: sql<string>`(SELECT title FROM courses WHERE id = ${assessments.courseId})`,
+      })
+      .from(assessmentResults)
+      .innerJoin(
+        assessments,
+        eq(assessmentResults.assessmentId, assessments.id),
+      )
+      .where(eq(assessmentResults.userId, userId))
+      .orderBy(desc(assessmentResults.completedAt))
+
+    return reply.send({ data: results })
+  })
+
+  // Get result by ID (must be before /:id to avoid route conflict)
+  app.get("/results/:resultId", async (request, reply) => {
+    const userId = request.userId
+
+    if (!userId) {
+      return reply.status(401).send({ error: true, message: "Unauthorized" })
+    }
+
+    const { resultId } = z
+      .object({ resultId: z.string().uuid() })
+      .parse(request.params)
+
+    const [result] = await app.db
+      .select()
+      .from(assessmentResults)
+      .where(
+        and(
+          eq(assessmentResults.id, resultId),
+          eq(assessmentResults.userId, userId),
+        ),
+      )
+      .limit(1)
+
+    if (!result) {
+      return reply
+        .status(404)
+        .send({ error: true, message: "Result not found" })
+    }
+
+    const [assessment] = result.assessmentId
+      ? await app.db
+          .select()
+          .from(assessments)
+          .where(eq(assessments.id, result.assessmentId))
+          .limit(1)
+      : [undefined]
+
+    return reply.send({
+      data: {
+        ...result,
+        assessment: assessment
+          ? {
+              title: assessment.title,
+              questions: assessment.questions,
+              passingScore: assessment.passingScore,
+            }
+          : undefined,
+      },
+    })
+  })
+
   // Get assessment by ID
   app.get("/:id", async (request, reply) => {
     const { id } = assessmentParamSchema.parse(request.params)
@@ -271,85 +352,5 @@ export async function assessmentRoutes(app: FastifyInstance) {
     })
   })
 
-  // Get user's results
-  app.get("/me/results", async (request, reply) => {
-    const userId = request.userId
 
-    if (!userId) {
-      return reply.status(401).send({ error: true, message: "Unauthorized" })
-    }
-
-    const results = await app.db
-      .select({
-        id: assessmentResults.id,
-        assessmentId: assessmentResults.assessmentId,
-        score: assessmentResults.score,
-        passed: assessmentResults.passed,
-        timeTaken: assessmentResults.timeTaken,
-        completedAt: assessmentResults.completedAt,
-        assessmentTitle: assessments.title,
-        courseTitle: sql<string>`(SELECT title FROM courses WHERE id = ${assessments.courseId})`,
-      })
-      .from(assessmentResults)
-      .innerJoin(
-        assessments,
-        eq(assessmentResults.assessmentId, assessments.id),
-      )
-      .where(eq(assessmentResults.userId, userId))
-      .orderBy(desc(assessmentResults.completedAt))
-
-    return reply.send({ data: results })
-  })
-
-  // Get result by ID
-  app.get("/results/:resultId", async (request, reply) => {
-    const userId = request.userId
-
-    if (!userId) {
-      return reply.status(401).send({ error: true, message: "Unauthorized" })
-    }
-
-    const { resultId } = z
-      .object({ resultId: z.string().uuid() })
-      .parse(request.params)
-
-    const [result] = await app.db
-      .select()
-      .from(assessmentResults)
-      .where(
-        and(
-          eq(assessmentResults.id, resultId),
-          eq(assessmentResults.userId, userId),
-        ),
-      )
-      .limit(1)
-
-    if (!result) {
-      return reply
-        .status(404)
-        .send({ error: true, message: "Result not found" })
-    }
-
-    // Get assessment details
-    const [assessment] = result.assessmentId
-      ? await app.db
-          .select()
-          .from(assessments)
-          .where(eq(assessments.id, result.assessmentId))
-          .limit(1)
-      : [undefined]
-
-    return reply.send({
-      data: {
-        ...result,
-        assessment: assessment
-          ? {
-              title: assessment.title,
-              questions: assessment.questions,
-              passingScore: assessment.passingScore,
-            }
-          : undefined,
-      },
-    })
-  })
 }
