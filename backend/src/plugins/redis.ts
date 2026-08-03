@@ -1,5 +1,6 @@
+import fp from "fastify-plugin"
 import Redis from "ioredis"
-import { FastifyInstance } from "fastify"
+import type { FastifyInstance } from "fastify"
 import { config } from "../lib/config.js"
 import { logger } from "../lib/logger.js"
 
@@ -9,7 +10,7 @@ declare module "fastify" {
   }
 }
 
-export async function redisPlugin(app: FastifyInstance) {
+export const redisPlugin = fp(async function redisPlugin(app: FastifyInstance) {
   if (!config.redisUrl) {
     logger.info("Cache plugin disabled (no Redis)")
     app.decorate("redis", null)
@@ -50,4 +51,4 @@ export async function redisPlugin(app: FastifyInstance) {
     logger.warn("Redis unavailable, continuing without cache")
     app.decorate("redis", null)
   }
-}
+})

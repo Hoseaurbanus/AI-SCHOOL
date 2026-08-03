@@ -1,6 +1,7 @@
+import fp from "fastify-plugin"
 import { drizzle } from "drizzle-orm/postgres-js"
 import postgres from "postgres"
-import { FastifyInstance } from "fastify"
+import type { FastifyInstance } from "fastify"
 import { config } from "../lib/config.js"
 import { logger } from "../lib/logger.js"
 import * as schema from "../db/schema.js"
@@ -11,7 +12,7 @@ declare module "fastify" {
   }
 }
 
-export async function dbPlugin(app: FastifyInstance) {
+export const dbPlugin = fp(async function dbPlugin(app: FastifyInstance) {
   try {
     const client = postgres(config.databaseUrl, {
       max: 20,
@@ -33,4 +34,4 @@ export async function dbPlugin(app: FastifyInstance) {
     logger.error(error, "❌ Database connection failed")
     throw error
   }
-}
+})
