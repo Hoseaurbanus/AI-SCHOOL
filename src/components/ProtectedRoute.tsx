@@ -1,6 +1,9 @@
 import { Navigate, Outlet } from "react-router-dom"
 import { useAuth } from "../hooks/useAuth"
 
+const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+const clerkEnabled = clerkPubKey && clerkPubKey !== "pk_test_your_key_here"
+
 interface Props {
   requiredRole?: "student" | "admin"
 }
@@ -22,7 +25,7 @@ export default function ProtectedRoute({ requiredRole }: Props) {
     )
   }
 
-  if (!isAuthenticated) {
+  if (clerkEnabled && !isAuthenticated) {
     return <Navigate to="/login" replace />
   }
 

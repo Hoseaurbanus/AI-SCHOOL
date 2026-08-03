@@ -2,7 +2,32 @@ import { useAuth as useClerkAuth, useUser } from "@clerk/clerk-react"
 import { useCallback } from "react"
 import type { LoginRequest, RegisterRequest } from "../types"
 
+const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+const clerkEnabled = clerkPubKey && clerkPubKey !== "pk_test_your_key_here"
+
 export function useAuth() {
+  if (!clerkEnabled) {
+    return {
+      user: null,
+      isAuthenticated: false,
+      isLoading: false,
+      isStudent: true,
+      isAdmin: false,
+      login: async (_data: LoginRequest) => {
+        window.location.href = "/login"
+      },
+      register: async (_data: RegisterRequest) => {
+        window.location.href = "/register"
+      },
+      logout: async () => {},
+      getToken: async () => null,
+    }
+  }
+
+  return useClerkAuthHook()
+}
+
+function useClerkAuthHook() {
   const { isLoaded, isSignedIn, getToken, signOut } = useClerkAuth()
   const { user: clerkUser } = useUser()
 

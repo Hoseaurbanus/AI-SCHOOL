@@ -26,17 +26,33 @@ async function enableMocking() {
 }
 
 enableMocking().then(() => {
-  createRoot(document.getElementById("root")!).render(
+  const content = (
     <StrictMode>
-      <ClerkProvider publishableKey={clerkPubKey}>
-        <BrowserRouter>
-          <QueryClientProvider client={queryClient}>
-            <ToastProvider>
-              <App />
-            </ToastProvider>
-          </QueryClientProvider>
-        </BrowserRouter>
-      </ClerkProvider>
-    </StrictMode>,
+      <BrowserRouter>
+        <QueryClientProvider client={queryClient}>
+          <ToastProvider>
+            <App />
+          </ToastProvider>
+        </QueryClientProvider>
+      </BrowserRouter>
+    </StrictMode>
   )
+
+  if (clerkPubKey && clerkPubKey !== "pk_test_your_key_here") {
+    createRoot(document.getElementById("root")!).render(
+      <StrictMode>
+        <ClerkProvider publishableKey={clerkPubKey}>
+          <BrowserRouter>
+            <QueryClientProvider client={queryClient}>
+              <ToastProvider>
+                <App />
+              </ToastProvider>
+            </QueryClientProvider>
+          </BrowserRouter>
+        </ClerkProvider>
+      </StrictMode>
+    )
+  } else {
+    createRoot(document.getElementById("root")!).render(content)
+  }
 })
