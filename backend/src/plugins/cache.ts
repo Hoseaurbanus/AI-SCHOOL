@@ -1,158 +1,100 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify"
+import type Redis from "ioredis"
 
-// Cache configuration
 interface CacheConfig {
-  ttl: number // Time to live in seconds
+  ttl: number
   prefix: string
 }
 
-// Default cache configs per route type
 const cacheConfigs: Record<string, CacheConfig> = {
-  courses: { ttl: 300, prefix: "courses" }, // 5 minutes
-  course: { ttl: 600, prefix: "course" }, // 10 minutes
+  courses: { ttl: 300, prefix: "courses" },
+  course: { ttl: 600, prefix: "course" },
   assessments: { ttl: 300, prefix: "assessments" },
-  user: { ttl: 60, prefix: "user" }, // 1 minute
-  stats: { ttl: 120, prefix: "stats" }, // 2 minutes
-  recommendations: { ttl: 180, prefix: "recommendations" }, // 3 minutes
+  user: { ttl: 60, prefix: "user" },
+  stats: { ttl: 120, prefix: "stats" },
+  recommendations: { ttl: 180, prefix: "recommendations" },
   analytics: { ttl: 60, prefix: "analytics" },
 }
 
-// Generate cache key from request
 function generateCacheKey(prefix: string, request: FastifyRequest): string {
   const { url, method, userId } = request
   const params = JSON.stringify(request.params)
   const query = JSON.stringify(request.query)
-
   return `${prefix}:${method}:${url}:${userId || "anonymous"}:${params}:${query}`
 }
 
-// Cache decorator
+function getRedis(app: FastifyInstance): Redis | null {
+  const r = app.redis
+  if (r && typeof r.get === "function") return r
+  return null
+}
+
 export async function cachePlugin(app: FastifyInstance) {
-  // Check if Redis is available
-  const redisAvailable = app.redis && typeof app.redis.get === "function"
+  const redis = getRedis(app)
 
-  // Cache middleware factory
-  function createCacheMiddleware(config: CacheConfig) {
-    return async (request: FastifyRequest, reply: FastifyReply) => {
-      if (!redisAvailable) return
-
-      const cacheKey = generateCacheKey(config.prefix, request)
-
-      try {
-        const cached = await app.redis.get(cacheKey)
-        if (cached) {
-          const data = JSON.parse(cached)
-          reply.send(data)
-          return reply
-        }
-      } catch (error) {
-        // Cache miss or error, continue
-      }
-    }
-  }
-
-  // Cache response interceptor
   app.addHook("onSend", async (request, reply, payload) => {
-    if (!redisAvailable) return payload
+    if (!redis) return payload
 
     const url = request.url
     let config: CacheConfig | undefined
 
-    // Match route to cache config
     if (url.startsWith("/api/v1/courses") && request.method === "GET") {
       config = url.includes("/featured")
         ? cacheConfigs.courses
         : url.match(/\/[a-f0-9-]+$/)
           ? cacheConfigs.course
           : cacheConfigs.courses
-    } else if (
-      url.startsWith("/api/v1/assessments") &&
-      request.method === "GET"
-    ) {
+    } else if (url.startsWith("/api/v1/assessments") && request.method === "GET") {
       config = cacheConfigs.assessments
-    } else if (
-      url.startsWith("/api/v1/recommendations") &&
-      request.method === "GET"
-    ) {
+    } else if (url.startsWith("/api/v1/recommendations") && request.method === "GET") {
       config = cacheConfigs.recommendations
-    } else if (
-      url.startsWith("/api/v1/analytics") &&
-      request.method === "GET"
-    ) {
+    } else if (url.startsWith("/api/v1/analytics") && request.method === "GET") {
       config = cacheConfigs.analytics
     }
 
     if (config && reply.statusCode === 200) {
       const cacheKey = generateCacheKey(config.prefix, request)
-
       try {
-        await app.redis.setex(cacheKey, config.ttl, payload as string)
-      } catch (error) {
-        // Cache write failed, continue
-      }
+        await redis.setex(cacheKey, config.ttl, payload as string)
+      } catch {}
     }
 
     return payload
   })
 
-  // Invalidate cache by pattern
   app.decorate("invalidateCache", async (pattern: string) => {
-    if (!redisAvailable) return
-
+    if (!redis) return
     try {
-      const keys = await app.redis.keys(`*${pattern}*`)
-      if (keys.length > 0) {
-        await app.redis.del(...keys)
-      }
-    } catch (error) {
-      // Cache invalidation failed
-    }
+      const keys = await redis.keys(`*${pattern}*`)
+      if (keys.length > 0) await redis.del(...keys)
+    } catch {}
   })
 
-  // Clear all cache
   app.decorate("clearCache", async () => {
-    if (!redisAvailable) return
-
+    if (!redis) return
     try {
-      await app.redis.flushdb()
-    } catch (error) {
-      // Cache clear failed
-    }
+      await redis.flushdb()
+    } catch {}
   })
 
-  // Cache stats
   app.decorate("getCacheStats", async () => {
-    if (!redisAvailable) {
-      return { available: false }
-    }
-
+    if (!redis) return { available: false }
     try {
-      const info = await app.redis.info("stats")
-      const keyspace = await app.redis.info("keyspace")
-
-      return {
-        available: true,
-        info,
-        keyspace,
-      }
+      const info = await redis.info("stats")
+      const keyspace = await redis.info("keyspace")
+      return { available: true, info, keyspace }
     } catch (error) {
       return { available: false, error: (error as Error).message }
     }
   })
 
   app.addHook("onRequest", async (request, reply) => {
-    const url = request.url
-
-    // Skip cache for non-GET requests
+    if (!redis) return
     if (request.method !== "GET") return
+    if (request.url.includes("/admin")) return
+    if (request.url.includes("/me")) return
 
-    // Skip cache for admin routes
-    if (url.includes("/admin")) return
-
-    // Skip cache for user-specific routes
-    if (url.includes("/me")) return
-
-    // Check cache
+    const url = request.url
     let config: CacheConfig | undefined
 
     if (url.startsWith("/api/v1/courses")) {
@@ -169,11 +111,10 @@ export async function cachePlugin(app: FastifyInstance) {
       config = cacheConfigs.analytics
     }
 
-    if (config && redisAvailable) {
+    if (config) {
       const cacheKey = generateCacheKey(config.prefix, request)
-
       try {
-        const cached = await app.redis.get(cacheKey)
+        const cached = await redis.get(cacheKey)
         if (cached) {
           const data = JSON.parse(cached)
           reply.header("X-Cache", "HIT")
@@ -181,17 +122,15 @@ export async function cachePlugin(app: FastifyInstance) {
           return reply
         }
         reply.header("X-Cache", "MISS")
-      } catch (error) {
+      } catch {
         reply.header("X-Cache", "ERROR")
       }
     }
   })
 
-  const status = redisAvailable ? "enabled" : "disabled (no Redis)"
-  app.log.info(`Cache plugin ${status}`)
+  app.log.info(`Cache plugin ${redis ? "enabled" : "disabled (no Redis)"}`)
 }
 
-// Extend Fastify types
 declare module "fastify" {
   interface FastifyInstance {
     invalidateCache: (pattern: string) => Promise<void>
